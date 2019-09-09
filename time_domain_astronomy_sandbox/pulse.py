@@ -72,11 +72,11 @@ class Pulse():
             ax.set_xscale(xscale)
 
         if savefig:
-            fig.savefig('%d.pdf' % dm, )
+            fig.savefig('%d.%s' % (dm, ext) )
 
     def plot_delay_v_frequency_interactive(self, xscale='linear', dm_min=0,
                                            dm_max=5000, dm_step=5, dm_init=0,
-                                           savefig=False):
+                                           savefig=False, ext='png'):
         """Plot pulse's delay vs frequency interactively with ipywidgets.
 
         Parameters
@@ -100,5 +100,5 @@ class Pulse():
         interact(
             self.plot_delay_v_frequency,
             dm=widgets.IntSlider(min=dm_min, max=dm_max, step=dm_step, value=dm_init),
-            xscale=xscale,
+            xscale=xscale, savefig=savefig, ext=ext
         )

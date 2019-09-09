@@ -69,13 +69,16 @@ def plot_image(data,
         ax.set_yticks(yticks)
         ax.set_yticklabels(ytick_labels)
 
-
 def plot_multi_images(data_arr,
                       xticks=[], xtick_labels=[],
                       yticks=[], ytick_labels=[],
                       direction='horizontal',
                       xfig_size=10, yfig_size=5,
-                      spectrum=False
+                      spectrum=False,
+                      savefig=False,
+                      fig_name='multi-images',
+                      ext='png',
+                      dpi=150
                       ):
     """Plot spectrum.
 
@@ -91,14 +94,18 @@ def plot_multi_images(data_arr,
         List of ticks for y axis
     yticks_labels : list
         List of tick labels for y axis
-    ncols : int
-        Number of column for matplotlib.pyplot.subplots
-    nrows : int
-        Number of rows for matplotlib.pyplot.subplots
+    direction : str
+        General direction onto which append subplots (default: 'horizontal')
     xfig_size : int
-        Figure size in x
+        Figure size in x (default: 10)
     yfig_size : int
-        Figure size in y
+        Figure size in y (default: 5)
+    savefig : bool
+        Save figure (default: False)
+    fig_name : str
+        Figure name (default: 'multi-images')
+    ext : str
+        File extension (default 'png')
 
     """
     if direction == 'horizontal':
@@ -117,9 +124,9 @@ def plot_multi_images(data_arr,
     for i in range(len(data_arr)):
         im = ax[i].imshow(data_arr[i], origin='lower')
         if spectrum:
-            ax[i].autoscale(False)
             ax2 = ax[i].twinx()
-            ax2.plot(data_arr[i].sum(axis=0), color='black', alpha=0.5)
+            ax[i].autoscale(False)
+            ax2.plot(data_arr[i].sum(axis=0), color='black', alpha=0.2)
             ax2.set_ylabel('S/N')
         fig.colorbar(im, ax=ax[i])
 
@@ -142,3 +149,5 @@ def plot_multi_images(data_arr,
                 plt.setp(ax[i].get_yticklabels(), visible=False)
 
     plt.tight_layout()
+    if savefig:
+        plt.savefig("%s.%s" % (fig_name, ext), dpi=dpi)
