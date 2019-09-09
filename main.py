@@ -1,8 +1,8 @@
 """Test functions."""
-from .classes.backend import Backend
-from .classes.observation import Observation
-from .classes.pulse import Pulse
-from .classes.plotting import plot_multi_images
+from time_domain_astronomy_sandbox.backend import Backend
+from time_domain_astronomy_sandbox.observation import Observation
+from time_domain_astronomy_sandbox.pulse import Pulse
+from time_domain_astronomy_sandbox.plotting import plot_multi_images
 from matplotlib import rc
 
 
@@ -75,11 +75,7 @@ def pulse_and_rfi__cleaned(spectrum=False):
     obs.add_dispersed_pulse(dm=1, width=0.006, pulse_t0=0.33, snr=50)
     obs.add_dispersed_pulse(dm=10, width=0.006, pulse_t0=0.73, snr=15)
 
-    for f1, f2 in [
-        # [100, 132],
-        [560, 575],
-        # [1220, 1265]
-    ]:
+    for f1, f2 in [[100, 131], [560, 575], [1220, 1255]]:
         obs.add_rfi(
             t_start=0.,
             t_stop=0.5,
@@ -107,6 +103,8 @@ def pulse_and_rfi__cleaned(spectrum=False):
             o_tc,
             o_fc,
             obs.frequency_cleaning(obs.time_cleaning(), keep_state=True),
+            obs.frequency_cleaning(obs.time_cleaning(), keep_state=True),
+            obs.frequency_cleaning(obs.time_cleaning(), keep_state=True),
             obs.dedisperse(dm=1000),
         ),
         direction='vertical',
@@ -117,7 +115,7 @@ def pulse_and_rfi__cleaned(spectrum=False):
         yticks=obs.backend.freq_indices[::ystep],
         ytick_labels=["%.0f" % f for f in obs.backend.frequencies[::ystep]],
 
-        xfig_size=30,
-        yfig_size=10,
+        xfig_size=50,
+        yfig_size=20,
         spectrum=spectrum
     )
