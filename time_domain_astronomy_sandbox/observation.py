@@ -133,8 +133,9 @@ class Observation():
     def add_dispersed_pulse(self, dm, width, pulse_t0, snr=100, verbose=False):
         pulse = Pulse(self.backend, width=width)
         pulse_t_start = self.index_to_time(index=self.time_to_index(pulse_t0).astype(int))
-        value = ((self.noise_median + self.noise_std*snr)/(self.backend.n_channels*pulse.width))
         t_idx = self.time_to_index(t_i=pulse_t_start+pulse.delays(dm=dm))
+        area = self.backend.n_channels*pulse.width
+        value = (self.noise_median + self.noise_std * snr)/area
 
         for i in range(t_idx.shape[0]):
             self.add_signal(value, i, i+1, t_idx[i], t_idx[i]+self.time_to_index(pulse.width))
@@ -156,8 +157,8 @@ class Observation():
         stop = self.time_to_index(t_stop)
         step = self.time_to_index(t_step)
         width = self.time_to_index(width)
-
-        value = (self.noise_median + snr * self.noise_std)/np.ceil((stop-start)/(step*width)).astype(int)
+        area = np.ceil((stop-start)/(step*width)).astype(int)
+        value = (self.noise_median + snr * self.noise_std)/area
 
         for t in range(start, stop, step):
             self.add_signal(value, f_start, f_stop, t, t+width)
