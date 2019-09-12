@@ -30,7 +30,7 @@ class Observation():
         self.t0 = t0
         self.window = np.random.normal(0, 1, (self.backend.n_channels,
                                               int(self.length*backend.samples_per_second)))
-        self.window += np.abs(np.min(self.window))
+        # self.window += np.abs(np.min(self.window))
         self.noise_median = np.median(self.window).copy()
         self.noise_std = np.std(self.window).copy()
 
@@ -42,6 +42,16 @@ class Observation():
         self.times = np.array([self.next_time(i) for i in range(int(self.backend.samples_per_second *
                                                                     self.length))])
         self.time_indices = np.array([self.time_to_index(t) for t in self.times])
+        # self.snr = lambda snr, area : (self.noise_median + snr * self.noise_std) / np.sqrt(area)
+        self.snr = lambda snr, area : snr / np.sqrt(area)
+
+    # @property
+    # def window(self):
+    #     return np.abs(np.min(self._window))
+    #
+    # @window.setter
+    # def window(self, window):
+    #     self._window = window
 
     def time_cleaning(self, window=[], n_iter=1, keep_state=False):
         """RFI mitigation (cleaning) in time domain.
@@ -72,7 +82,7 @@ class Observation():
         self.window = window
         return self.window
 
-    def frequency_cleaning(self, window=[], n_iter=1, keep_state=False):
+    def frequency_cleaning(self, window=[], n_iter=1, threshold=2.75, keep_state=False):
         """RFI mitigation (cleaning) in frequency domain.
 
         Parameters
@@ -94,9 +104,9 @@ class Observation():
             window = self.window
 
         if keep_state:
-            window = RFIm().fdsc_amber(window, n_iter=n_iter)
+            window = RFIm().fdsc_amber(window, n_iter=n_iter, threshold=threshold)
         else:
-            return RFIm().fdsc_amber(window, n_iter=n_iter)
+            return RFIm().fdsc_amber(window, n_iter=n_iter, threshold=threshold)
 
         self.window = window
         return self.window
@@ -128,20 +138,20 @@ class Observation():
         ])
 
     def add_signal(self, signal_value, x_t0, x_t1, y_t0, y_t1):
-        self.window[x_t0:x_t1, y_t0:y_t1] = signal_value
+        self.window[x_t0:x_t1, y_t0:y_t1] += signal_value
 
     def add_dispersed_pulse(self, dm, width, pulse_t0, snr=100, verbose=False):
         pulse = Pulse(self.backend, width=width)
         pulse_t_start = self.index_to_time(index=self.time_to_index(pulse_t0).astype(int))
         t_idx = self.time_to_index(t_i=pulse_t_start+pulse.delays(dm=dm))
-        area = self.backend.n_channels*pulse.width
-        value = (self.noise_median + self.noise_std * snr)/area
+        area = np.sqrt(self.backend.n_channels*pulse.width/self.backend.sampling_time)
+        value = self.snr(snr, area)
 
         for i in range(t_idx.shape[0]):
             self.add_signal(value, i, i+1, t_idx[i], t_idx[i]+self.time_to_index(pulse.width))
 
         if verbose:
-            print ("snr:", snr, "value: ", value)
+            print ("snr:", snr, "value: ", value, "area: ", area)
 
     def add_rfi(self,
                 t_start:float=0,
@@ -157,8 +167,8 @@ class Observation():
         stop = self.time_to_index(t_stop)
         step = self.time_to_index(t_step)
         width = self.time_to_index(width)
-        area = np.ceil((stop-start)/(step*width)).astype(int)
-        value = (self.noise_median + snr * self.noise_std)/area
+        area = np.sqrt((stop-start)/(step*width))
+        value = self.snr(snr, area)
 
         for t in range(start, stop, step):
             self.add_signal(value, f_start, f_stop, t, t+width)

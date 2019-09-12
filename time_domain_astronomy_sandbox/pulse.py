@@ -74,6 +74,51 @@ class Pulse():
         if savefig:
             fig.savefig('%d.%s' % (dm, ext) )
 
+    def plot_signal_dispersed_dedispersed(self, dm, step=200, xscale='linear',
+                               savefig=False, ext='png', dpi=150):
+        """Plot pulse's delay vs frequency.
+
+        Parameters
+        ----------
+        dm : int
+            Value for dispersion measure of the pulse
+        xscale : str
+            matplotlib's xscale option (default: 'linear')
+        savefig : bool
+            save figure to disk (default: False)
+        ext : 'str'
+            figure's file extention (default: png)
+
+        """
+        ncols=1
+        nrows=1
+        fig, ax = plt.subplots(figsize=(10, 6), ncols=ncols, nrows=nrows)
+        ax.plot(self.delays(dm), self.backend.frequencies, label='Dispersed signal in the zero-DM plane')
+        ax.plot(self.delays(0), self.backend.frequencies, label=r'De-dispersed signal (DM=3000 pc/cm$^3$)')
+
+        for y, x1, x2 in zip(
+            self.backend.frequencies[::step],
+            self.delays(dm=dm)[::step],
+            self.delays(0)[::step]
+        ):
+            ax.arrow(
+                x1, y, -x1+0.1 if x1 > 0.1 else 0.1 if x1 > 0 else 0, 0,
+                head_width=7, head_length=0.09 if ext=='pdf' else 0.1,
+                fc='k', ec='k'
+                )
+
+        ax.set_xlabel('Arrival time (s)')
+        ax.set_ylabel('Frequency (MHz)')
+
+        ax.legend()
+
+        if xscale:
+            ax.set_xscale(xscale)
+
+        if savefig:
+            plt.tight_layout()
+            plt.savefig('dispersed_dedispersed_dm_%d.%s' % (dm, ext), dpi=dpi)
+
     def plot_delay_v_frequency_interactive(self, xscale='linear', dm_min=0,
                                            dm_max=5000, dm_step=5, dm_init=0,
                                            savefig=False, ext='png'):
