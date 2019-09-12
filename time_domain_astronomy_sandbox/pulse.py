@@ -30,6 +30,7 @@ class Pulse():
 
         # Frequency delay
         self.dt = lambda dm, f_i : (4.148808 * 1000 * (f_i**-2 - self.backend.fmax**-2)) * dm
+
     def delays(self, dm):
         """Create array of delays for each backend frequency channel.
 
@@ -94,7 +95,7 @@ class Pulse():
         nrows=1
         fig, ax = plt.subplots(figsize=(10, 6), ncols=ncols, nrows=nrows)
         ax.plot(self.delays(dm), self.backend.frequencies, label='Dispersed signal in the zero-DM plane')
-        ax.plot(self.delays(0), self.backend.frequencies, label=r'De-dispersed signal (DM=3000 pc/cm$^3$)')
+        ax.plot(self.delays(0), self.backend.frequencies, label=r'De-dispersed signal (DM=%d pc/cm$^3$)' % dm)
 
         for y, x1, x2 in zip(
             self.backend.frequencies[::step],

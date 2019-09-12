@@ -6,12 +6,12 @@ rc('font', size=16)
 rc('axes', titlesize=18)
 rc('axes', labelsize=18)
 
-from mpl_toolkits.axes_grid.axes_grid import AxesGrid
-from mpl_toolkits.axes_grid.anchored_artists import AnchoredText
+from mpl_toolkits.axes_grid1 import AxesGrid
+from matplotlib.offsetbox import AnchoredText
 
 def add_at(ax, t, loc=2):
-    fp = dict(size=13)
-    _at = AnchoredText(t, loc=loc, prop=fp)
+    # fp = dict(size=13)
+    _at = AnchoredText(t, loc=loc)#, prop=fp)
     ax.add_artist(_at)
     return _at
 
@@ -60,7 +60,7 @@ def set_multi_axes(ax, direction, xticks, xtick_labels, yticks, ytick_labels):
 
         if len(yticks) > 0 and len(ytick_labels) > 0:
             if (direction == 'horizontal' and i == 0) or direction == 'vertical':
-                axi.set_ylabel('Frequency (MHz)')
+                axi.set_ylabel('Freq. (MHz)')
                 axi.set_yticks(yticks)
                 axi.set_yticklabels(ytick_labels)
             else:
@@ -233,7 +233,8 @@ def plot_multi_images(data_arr,
     fig, ax = plt.subplots(
         figsize=(xfig_size, yfig_size),
         ncols=ncols,
-        nrows=nrows
+        nrows=nrows,
+        gridspec_kw = {'hspace':0, 'wspace':0},
     )
 
     for i, axi in enumerate(ax):
@@ -245,16 +246,15 @@ def plot_multi_images(data_arr,
             if len(labels[i]) > 0:
                 add_at(axi, labels[i], loc=4)
         if spectrum:
-            ax2 = axi.twinx()
             axi.autoscale(False)
-            ax2.plot(snr(data_arr[i], noise_median, noise_std), color='black', alpha=0.2)
-            ax2.set_ylabel('S/N')
+            ax2 = axi.twinx()
+            ax2.plot(np.mean(data_arr[i], axis=0), color='white', alpha=0.2)
+            ax2.set_ylabel('Median intensity')
         if colorbar:
             fig.colorbar(im, ax=axi)
 
     set_multi_axes(ax, direction, xticks, xtick_labels, yticks, ytick_labels)
 
     plt.tight_layout()
-
     if savefig:
         plt.savefig("%s.%s" % (fig_name, ext), dpi=dpi)

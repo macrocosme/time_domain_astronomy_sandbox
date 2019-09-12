@@ -154,11 +154,8 @@ class Observation():
             print ("snr:", snr, "value: ", value, "area: ", area)
 
     def add_rfi(self,
-                t_start:float=0,
-                t_stop:float=10,
-                t_step:float=100,
+                t_start=0., t_stop=0.5, t_step=0.03, t_width=0.003,
                 f_start=200, f_stop=250,
-                width=10,
                 snr=50,
                 verbose=False
                ):
@@ -166,8 +163,10 @@ class Observation():
         start = self.time_to_index(t_start)
         stop = self.time_to_index(t_stop)
         step = self.time_to_index(t_step)
-        width = self.time_to_index(width)
-        area = np.sqrt((stop-start)/(step*width))
+        width = self.time_to_index(t_width)
+        height = np.abs(f_start-f_stop)
+        # area = np.sqrt((stop-start)/(step*width))
+        area = np.sqrt(width*height)
         value = self.snr(snr, area)
 
         for t in range(start, stop, step):

@@ -33,3 +33,5 @@ class Backend():
         self.next_freq = lambda i : self.fmin + i * self.channel_bandwidth
         self.frequencies = np.array([self.next_freq(i) for i in range(self.n_channels)])
         self.freq_indices = np.array([self.freq_to_index(f) for f in self.frequencies])
+
+        self.frequency_range_to_n_channels = lambda range : np.ceil(range/self.channel_bandwidth).astype(int)
