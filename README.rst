@@ -19,7 +19,7 @@ Classes includes:
     - ``Backend``: properties describing an observatory backend,
     - ``Pulse``: a broadband dispersed pulse,
     - ``Observation``: an observation data product generated for a given ``Backend``,
-    - ``RFIm``: radio frequency interference mitigation functions (following https://github.com/AA-ALERT/RFIm/tree/development),
+    - ``RFIm``: radio frequency interference mitigation functions,
     - ``Plotting``: plotting functions.
 
 Copyright (c) Dany Vohl. 2019.
