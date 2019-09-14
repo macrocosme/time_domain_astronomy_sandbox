@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Documentation for time_domain_astronomy_sandbox
+Documentation for time-domain astronomy sandbox
 ===============================================
 
 This package consists of a series of classes to simulate time-domain astronomy data products.
