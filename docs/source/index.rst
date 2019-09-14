@@ -174,13 +174,3 @@ License
 -------
 
    This project is licensed under the terms of the GNU GPL v3+ license.
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Contents:
-
-   backend
-   pulse
-   observation
-   rfim
-   plotting
