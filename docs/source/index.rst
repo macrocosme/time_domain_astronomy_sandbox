@@ -8,6 +8,8 @@ Documentation for time_domain_astronomy_sandbox
 
 This package consists of a series of classes to simulate time-domain astronomy data products.
 
+.. image:: _static/dispersed_dedispersed_dm_3000.png
+
 Classes includes:
     - ``Backend``: properties describing an observatory backend,
     - ``Pulse``: a broadband dispersed pulse,
@@ -15,7 +17,6 @@ Classes includes:
     - ``RFIm``: radio frequency interference mitigation functions,
     - ``Plotting``: plotting functions.
 
-..image:: _static/dispersed_dedispersed_dm_3000.png
 
 Copyright (c) Dany Vohl. 2019.
 
