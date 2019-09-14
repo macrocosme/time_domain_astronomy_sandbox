@@ -10,11 +10,11 @@ This package consists of a series of classes to simulate time-domain astronomy d
 
 .. image:: _static/dispersed_dedispersed_dm_3000.png
 
-.. image:: _static/multi-images.png
+.. image:: _static/multi-images.jpg
 
-.. image:: _static/noise_pulses_rfi.png
+.. image:: _static/noise_pulses_rfi.jpg
 
-.. image:: _static/rficlean.png
+.. image:: _static/rficlean.jpg
 
 Classes includes:
     - ``Backend``: properties describing an observatory backend,

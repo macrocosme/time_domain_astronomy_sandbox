@@ -9,11 +9,11 @@ A series of classes to simulate time-domain astronomy data products.
 
 .. image:: docs/source/_static/dispersed_dedispersed_dm_3000.png
 
-.. image:: docs/source/_static/multi-images.png
+.. image:: docs/source/_static/multi-images.jpg
 
-.. image:: docs/source/_static/noise_pulses_rfi.png
+.. image:: docs/source/_static/noise_pulses_rfi.jpg
 
-.. image:: docs/source/_static/rficlean.png
+.. image:: docs/source/_static/rficlean.jpg
 
 Classes includes:
     - ``Backend``: properties describing an observatory backend,
