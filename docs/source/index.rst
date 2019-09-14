@@ -37,11 +37,6 @@ Requirements
 
 .. code-block:: shell
 
-    ## These can't be pip installed
-    # sigproc
-    # filterbank
-    # http://github.com/liamconnor/arts-analysis
-
     # pip[3] install -r requirements.txt
     numpy>=1.17.0
 	matplotlib>=2.1.2
