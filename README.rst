@@ -1,6 +1,6 @@
 .. image:: https://readthedocs.org/projects/time-domain-astronomy-sandbox/badge/?version=latest
-:target: https://time-domain-astronomy-sandbox.readthedocs.io/en/latest/?badge=latest
-:alt: Documentation Status
+    :target: https://time-domain-astronomy-sandbox.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
 Time-domain astronomy sandbox
 =============================
