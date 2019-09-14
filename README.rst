@@ -11,6 +11,10 @@ A series of classes to simulate time-domain astronomy data products.
 
 .. image:: docs/source/_static/multi-images.png
 
+.. image:: docs/source/_static/noise_pulses_rfi.png
+
+.. image:: docs/source/_static/rficlean.png
+
 Classes includes:
     - ``Backend``: properties describing an observatory backend,
     - ``Pulse``: a broadband dispersed pulse,
