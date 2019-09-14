@@ -84,7 +84,7 @@ Usage examples
 
 	interactive_pulse_arts()
 	
-3. Plot low- and high-DM wideband dispersed pulses, narrowband periodic pulses, and run RFI cleaning. 
+3. Plot low- and high-DM broadband dispersed pulses, narrowband periodic pulses, and run RFI cleaning. 
 
 .. code-block:: python 
 
