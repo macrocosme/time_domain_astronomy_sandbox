@@ -12,6 +12,10 @@ This package consists of a series of classes to simulate time-domain astronomy d
 
 .. image:: _static/multi-images.png
 
+.. image:: _static/noise_pulses_rfi.png
+
+.. image:: _static/rficlean.png
+
 Classes includes:
     - ``Backend``: properties describing an observatory backend,
     - ``Pulse``: a broadband dispersed pulse,
