@@ -88,6 +88,8 @@ Usage examples
 
 .. code-block:: python 
 
+	from matplotlib import rc
+	
 	def pulse_and_rfi__cleaned():
 	    obs = Observation(Backend(), length=1.024/1.5)
 	    raw = obs.window.copy()
