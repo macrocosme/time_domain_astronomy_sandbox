@@ -41,7 +41,6 @@ Requirements
 
 .. code-block:: shell
 
-    # pip[3] install -r requirements.txt
     	numpy>=1.17.0
 	matplotlib>=2.1.2
 	ipywidgets>=7.4.1
