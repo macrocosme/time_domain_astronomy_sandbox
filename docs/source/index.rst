@@ -10,8 +10,6 @@ This package consists of a series of classes to simulate time-domain astronomy d
 
 .. image:: _static/dispersed_dedispersed_dm_3000.png
 
-.. image:: _static/multi-images.jpg
-
 Classes includes:
     - ``Backend``: properties describing an observatory backend,
     - ``Pulse``: a broadband dispersed pulse,
@@ -41,6 +39,16 @@ Requirements
     numpy>=1.17.0
 	matplotlib>=2.1.2
 	ipywidgets>=7.4.1
+	
+Getting started
+---------------
+          
+Instanciate a Backend using your preferred properties and use as argument to instanciate an Observation.
+You can then add Pulses via add_dispersed_pulse (Pulse()) and add_rfi.
+
+You can test it for yourself by starting the "Usage example.ipynb" jupyter notebook with the same name on Binder_ (it takes a few second to launch the server).
+
+.. _Binder: https://mybinder.org/repo/macrocosme/time_domain_astronomy_sandbox/Usage%20example.ipynb
 
 Usage examples
 --------------
