@@ -54,7 +54,7 @@ Usage examples
 
 .. code-block:: python
 
-    from time_domain_astronomy_sandbox.backend import Backend
+    	from time_domain_astronomy_sandbox.backend import Backend
 	from time_domain_astronomy_sandbox.observation import Observation
 	from time_domain_astronomy_sandbox.pulse import Pulse
 	from time_domain_astronomy_sandbox.plotting import plot_multi_images, plot_multi_1D
@@ -87,7 +87,7 @@ Usage examples
 	    for t_start, t_step, t_width, f1, f2 in [
 	        [0., 0.01, 0.003, 350, 360], 
 	        [0.1, 0.008, 0.005, 700, 715], 
-	    #     [0.2, 0.007, 0.004, 1220, 1255]
+	        [0.2, 0.007, 0.004, 1220, 1255]
 	    ]:
 	        obs.add_rfi(
 	            t_start=t_start,
