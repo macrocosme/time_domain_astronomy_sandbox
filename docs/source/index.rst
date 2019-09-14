@@ -12,10 +12,6 @@ This package consists of a series of classes to simulate time-domain astronomy d
 
 .. image:: _static/multi-images.jpg
 
-.. image:: _static/noise_pulses_rfi.jpg
-
-.. image:: _static/rficlean.jpg
-
 Classes includes:
     - ``Backend``: properties describing an observatory backend,
     - ``Pulse``: a broadband dispersed pulse,
@@ -86,7 +82,6 @@ Usage examples
 	    for t_start, t_step, t_width, f1, f2 in [
 	        [0., 0.01, 0.003, 350, 360], 
 	        [0.1, 0.008, 0.005, 700, 715], 
-	        [0.2, 0.007, 0.004, 1220, 1255]
 	    ]:
 	        obs.add_rfi(
 	            t_start=t_start,
@@ -173,6 +168,13 @@ Usage examples
 	    )
 
 	pulse_and_rfi__cleaned()
+	
+Output:
+	
+.. image:: _static/noise_pulses_rfi.jpg
+
+.. image:: _static/rficlean.jpg
+	
 
 License
 -------
