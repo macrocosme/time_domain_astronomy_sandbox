@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-amber_configuration
-===================
+backend
+=======
 
 .. autoclass:: time_domain_astronomy_sandbox.backend.Backend
    :members:

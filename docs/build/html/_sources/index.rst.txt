@@ -42,11 +42,8 @@ Requirements
 	matplotlib>=2.1.2
 	ipywidgets>=7.4.1
 
-Usage example
--------------
-
-Usage
------
+Usage examples
+--------------
 
 1. Load classes:  
 
