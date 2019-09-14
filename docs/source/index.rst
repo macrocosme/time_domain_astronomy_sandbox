@@ -7,6 +7,7 @@ Documentation for time_domain_astronomy_sandbox
 ===============================================
 
 This package consists of a series of classes to simulate time-domain astronomy data products.
+
 Try it on on |Binder|.
 
 .. |Binder| raw:: html
