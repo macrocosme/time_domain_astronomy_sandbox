@@ -15,7 +15,7 @@ Classes includes:
     - ``RFIm``: radio frequency interference mitigation functions,
     - ``Plotting``: plotting functions.
 
-..image _static/dispersed_dedispersed_dm_3000.png
+..image:: _static/dispersed_dedispersed_dm_3000.png
 
 Copyright (c) Dany Vohl. 2019.
 
