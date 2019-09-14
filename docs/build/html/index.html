@@ -212,27 +212,51 @@ numpy&gt;<span class="o">=</span><span class="m">1</span>.17.0
 <ol class="arabic simple" start="3">
 <li><p>Plot low- and high-DM wideband dispersed pulses, narrowband periodic pulses, and run RFI cleaning.</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_one_pulse_dedisperse</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Plot one dispersed pulse, and it&#39;s dedispersed self.&quot;&quot;&quot;</span>
-    <span class="n">obs</span> <span class="o">=</span> <span class="n">Observation</span><span class="p">(</span><span class="n">Backend</span><span class="p">(),</span> <span class="n">length</span><span class="o">=</span><span class="mf">1.5</span><span class="o">*</span><span class="mf">1.024</span><span class="p">)</span>
-    <span class="n">noise_window</span> <span class="o">=</span> <span class="n">obs</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="n">obs</span><span class="o">.</span><span class="n">add_dispersed_pulse</span><span class="p">(</span><span class="n">dm</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.006</span><span class="p">,</span> <span class="n">pulse_t0</span><span class="o">=</span><span class="mf">0.16</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">xstep</span> <span class="o">=</span> <span class="mi">1000</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">pulse_and_rfi__cleaned</span><span class="p">():</span>
+    <span class="n">obs</span> <span class="o">=</span> <span class="n">Observation</span><span class="p">(</span><span class="n">Backend</span><span class="p">(),</span> <span class="n">length</span><span class="o">=</span><span class="mf">1.024</span><span class="o">/</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">obs</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">obs</span><span class="o">.</span><span class="n">add_dispersed_pulse</span><span class="p">(</span><span class="n">dm</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.006</span><span class="p">,</span> <span class="n">pulse_t0</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="n">frb</span> <span class="o">=</span> <span class="n">obs</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">obs</span><span class="o">.</span><span class="n">add_dispersed_pulse</span><span class="p">(</span><span class="n">dm</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.006</span><span class="p">,</span> <span class="n">pulse_t0</span><span class="o">=</span><span class="mf">0.23</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mi">125</span><span class="p">)</span>
+    <span class="n">obs</span><span class="o">.</span><span class="n">add_dispersed_pulse</span><span class="p">(</span><span class="n">dm</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">pulse_t0</span><span class="o">=</span><span class="mf">0.33</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mi">125</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_step</span><span class="p">,</span> <span class="n">t_width</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.003</span><span class="p">,</span> <span class="mi">350</span><span class="p">,</span> <span class="mi">360</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.008</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">,</span> <span class="mi">700</span><span class="p">,</span> <span class="mi">715</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.007</span><span class="p">,</span> <span class="mf">0.004</span><span class="p">,</span> <span class="mi">1220</span><span class="p">,</span> <span class="mi">1255</span><span class="p">]</span>
+    <span class="p">]:</span>
+        <span class="n">obs</span><span class="o">.</span><span class="n">add_rfi</span><span class="p">(</span>
+            <span class="n">t_start</span><span class="o">=</span><span class="n">t_start</span><span class="p">,</span>
+            <span class="n">t_stop</span><span class="o">=</span><span class="n">t_start</span><span class="o">+</span><span class="mf">0.3</span><span class="p">,</span>
+            <span class="n">t_step</span><span class="o">=</span><span class="n">t_step</span><span class="p">,</span>
+            <span class="n">t_width</span><span class="o">=</span><span class="n">t_width</span><span class="p">,</span>
+
+            <span class="n">f_start</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span>
+            <span class="n">f_stop</span><span class="o">=</span><span class="n">f2</span><span class="p">,</span>
+
+            <span class="n">snr</span><span class="o">=</span><span class="mi">125</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">xstep</span> <span class="o">=</span> <span class="mi">1100</span>
     <span class="n">ystep</span> <span class="o">=</span> <span class="mi">500</span>
 
-    <span class="n">rc</span><span class="p">(</span><span class="s1">&#39;font&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
-    <span class="n">rc</span><span class="p">(</span><span class="s1">&#39;axes&#39;</span><span class="p">,</span> <span class="n">titlesize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
-    <span class="n">rc</span><span class="p">(</span><span class="s1">&#39;axes&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">rc</span><span class="p">(</span><span class="s1">&#39;font&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+    <span class="n">rc</span><span class="p">(</span><span class="s1">&#39;axes&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+
+    <span class="n">o_window</span> <span class="o">=</span> <span class="n">obs</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="n">plot_multi_images</span><span class="p">(</span>
         <span class="p">(</span>
-            <span class="n">noise_window</span><span class="p">,</span>
-            <span class="n">obs</span><span class="o">.</span><span class="n">window</span><span class="p">,</span>
-            <span class="n">obs</span><span class="o">.</span><span class="n">dedisperse</span><span class="p">(</span><span class="n">dm</span><span class="o">=</span><span class="mi">1000</span><span class="p">),</span>
+            <span class="n">raw</span><span class="p">,</span>
+            <span class="n">frb</span><span class="p">,</span>
+            <span class="n">o_window</span><span class="p">,</span>
         <span class="p">),</span>
 
-        <span class="n">noise_median</span><span class="o">=</span><span class="n">obs</span><span class="o">.</span><span class="n">noise_median</span><span class="p">,</span>
-        <span class="n">noise_std</span><span class="o">=</span><span class="n">obs</span><span class="o">.</span><span class="n">noise_std</span><span class="p">,</span>
+        <span class="n">labels</span><span class="o">=</span><span class="p">(</span>
+            <span class="s1">&#39;Noise (gaussian)&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Noise + Faint FRB&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Noise + Faint FRB + Strong RFI&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
 
         <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">,</span>
 
@@ -242,11 +266,50 @@ numpy&gt;<span class="o">=</span><span class="m">1</span>.17.0
         <span class="n">yticks</span><span class="o">=</span><span class="n">obs</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">freq_indices</span><span class="p">[::</span><span class="n">ystep</span><span class="p">],</span>
         <span class="n">ytick_labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">%.0f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">obs</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[::</span><span class="n">ystep</span><span class="p">]],</span>
 
-        <span class="n">xfig_size</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
-        <span class="n">yfig_size</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">xfig_size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+        <span class="n">yfig_size</span><span class="o">=</span><span class="mf">7.3</span><span class="p">,</span>
+        <span class="n">spectrum</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">colorbar</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">savefig</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">fig_name</span><span class="o">=</span><span class="s1">&#39;noise_pulses_rfi&#39;</span><span class="p">,</span>
+        <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;pdf&#39;</span>
     <span class="p">)</span>
 
-<span class="n">test_one_pulse_dedisperse</span><span class="p">()</span>
+    <span class="n">o_tc</span> <span class="o">=</span> <span class="n">RFIm</span><span class="p">()</span><span class="o">.</span><span class="n">tdsc_amber</span><span class="p">(</span><span class="n">obs</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+    <span class="n">o_fc</span> <span class="o">=</span> <span class="n">RFIm</span><span class="p">()</span><span class="o">.</span><span class="n">fdsc_amber</span><span class="p">(</span><span class="n">obs</span><span class="o">.</span><span class="n">window</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+    <span class="n">plot_multi_images</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">o_tc</span><span class="p">,</span>
+            <span class="n">o_fc</span><span class="p">,</span>
+            <span class="n">obs</span><span class="o">.</span><span class="n">frequency_cleaning</span><span class="p">(</span><span class="n">obs</span><span class="o">.</span><span class="n">time_cleaning</span><span class="p">(),</span> <span class="n">keep_state</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+            <span class="n">obs</span><span class="o">.</span><span class="n">dedisperse</span><span class="p">(</span><span class="n">dm</span><span class="o">=</span><span class="mi">500</span><span class="p">),</span>
+        <span class="p">),</span>
+
+        <span class="n">labels</span><span class="o">=</span><span class="p">(</span>
+            <span class="s1">&#39;RFI mitigation (time)&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;RFI mitigation (freq.)&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;RFI mitigation (time and freq.)&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Dedispersed RFI mitigation (time and freq., DM=500)&#39;</span><span class="p">,</span>
+        <span class="p">),</span>
+
+        <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">,</span>
+
+        <span class="n">xticks</span><span class="o">=</span><span class="n">obs</span><span class="o">.</span><span class="n">time_indices</span><span class="p">[::</span><span class="n">xstep</span><span class="p">],</span>
+        <span class="n">xtick_labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">%.2f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">obs</span><span class="o">.</span><span class="n">times</span><span class="p">[::</span><span class="n">xstep</span><span class="p">]],</span>
+
+        <span class="n">yticks</span><span class="o">=</span><span class="n">obs</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">freq_indices</span><span class="p">[::</span><span class="n">ystep</span><span class="p">],</span>
+        <span class="n">ytick_labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">%.0f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">obs</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[::</span><span class="n">ystep</span><span class="p">]],</span>
+
+        <span class="n">xfig_size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+        <span class="n">yfig_size</span><span class="o">=</span><span class="mf">9.4</span><span class="p">,</span>
+        <span class="n">spectrum</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">colorbar</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">savefig</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">fig_name</span><span class="o">=</span><span class="s1">&#39;rficlean&#39;</span><span class="p">,</span>
+        <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;pdf&#39;</span>
+    <span class="p">)</span>
+
+<span class="n">pulse_and_rfi__cleaned</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
