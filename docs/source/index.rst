@@ -181,8 +181,6 @@ License
    This project is licensed under the terms of the GNU GPL v3+ license.
 
 
-Index
------
 
 .. toctree::
    :maxdepth: 1
