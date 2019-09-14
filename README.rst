@@ -16,4 +16,4 @@ Classes includes:
 
 Copyright (c) Dany Vohl. 2019.
 
-No license yet.
+This project is licensed under the terms of the GNU GPL v3+ license. Conditions can be found online.
