@@ -1,9 +1,9 @@
-Time-domain astronomy sandbox
-=============================
-
 .. image:: https://readthedocs.org/projects/time-domain-astronomy-sandbox/badge/?version=latest
 :target: https://time-domain-astronomy-sandbox.readthedocs.io/en/latest/?badge=latest
 :alt: Documentation Status
+
+Time-domain astronomy sandbox
+=============================
 
 A series of classes to simulate time-domain astronomy data products.
 
