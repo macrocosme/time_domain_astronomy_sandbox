@@ -7,10 +7,11 @@ Documentation for time_domain_astronomy_sandbox
 ===============================================
 
 This package consists of a series of classes to simulate time-domain astronomy data products.
+Try it on on |Binder|.
 
-Try it on on Binder_.
+.. |Binder| raw:: html
 
-.. _Binder: https://mybinder.org/repo/macrocosme/time_domain_astronomy_sandbox/Usage%20example.ipynb
+   <a href="https://mybinder.org/repo/macrocosme/time_domain_astronomy_sandbox/Usage%20example.ipynb" target="_blank">Binder</a>
 
 .. image:: _static/dispersed_dedispersed_dm_3000.png
 
@@ -50,9 +51,11 @@ Getting started
 Instanciate a Backend using your preferred properties and use as argument to instanciate an Observation.
 You can then add Pulses via add_dispersed_pulse (Pulse()) and add_rfi.
 
-You can test it for yourself by starting the "Usage example.ipynb" jupyter notebook with the same name on Binder_ (it takes a few second to launch the server).
+You can test it for yourself by starting the "Usage example.ipynb" jupyter notebook with the same name on |Binder| (it takes a few second to launch the server).
 
-.. _Binder: https://mybinder.org/repo/macrocosme/time_domain_astronomy_sandbox/Usage%20example.ipynb
+.. |Binder| raw:: html
+
+   <a href="https://mybinder.org/repo/macrocosme/time_domain_astronomy_sandbox/Usage%20example.ipynb" target="_blank">Binder</a>
 
 
 Usage examples
