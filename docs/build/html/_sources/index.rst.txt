@@ -82,7 +82,7 @@ Usage examples
 	    for t_start, t_step, t_width, f1, f2 in [
 	        [0., 0.01, 0.003, 350, 360], 
 	        [0.1, 0.008, 0.005, 700, 715], 
-	        [0.2, 0.007, 0.004, 1220, 1255]
+	    #     [0.2, 0.007, 0.004, 1220, 1255]
 	    ]:
 	        obs.add_rfi(
 	            t_start=t_start,
@@ -173,4 +173,18 @@ Usage examples
 License
 -------
 
-   This project is licensed under the terms of the GNU GPL v3+ license. Conditions can be found online.
+   This project is licensed under the terms of the GNU GPL v3+ license.
+
+
+Index
+-----
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Contents:
+
+   backend
+   pulse
+   observation
+   rfim
+   plotting
