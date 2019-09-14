@@ -173,4 +173,4 @@ Usage examples
 License
 -------
 
-   This project is licensed under the terms of the GNU GPL v3+ license.
+   This project is licensed under the terms of the GNU GPL v3+ license. Conditions can be found online.
