@@ -10,6 +10,8 @@ This package consists of a series of classes to simulate time-domain astronomy d
 
 .. image:: _static/dispersed_dedispersed_dm_3000.png
 
+.. image:: _static/dm_1000_width_0.006s_t0_0.16s_snr_12.png
+
 Classes includes:
     - ``Backend``: properties describing an observatory backend,
     - ``Pulse``: a broadband dispersed pulse,
