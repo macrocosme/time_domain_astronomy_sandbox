@@ -6,7 +6,11 @@
 Documentation for time-domain astronomy sandbox
 ===============================================
 
-This package consists of a series of classes to simulate time-domain astronomy data products.
+This |package| consists of a series of classes to simulate time-domain astronomy data products.
+
+.. |package| raw:: html
+
+   <a href="https://github.com/macrocosme/time_domain_astronomy_sandbox" target="_blank">package</a>
 
 Try it on on |Binder|.
 
@@ -16,7 +20,7 @@ Try it on on |Binder|.
 
 .. image:: _static/dispersed_dedispersed_dm_3000.png
 
-Classes includes:
+Classes currently includes:
     - ``Backend``: properties describing an observatory backend,
     - ``Pulse``: a broadband dispersed pulse,
     - ``Observation``: an observation data product generated for a given ``Backend``,
@@ -193,6 +197,23 @@ Output:
 
 .. image:: _static/rficlean.jpg
 	
+Comments and issues
+-------------------
+
+Comments and issues can be posted by opening  an |issue| on github.
+
+.. |issue| raw:: html
+
+   <a href="https://github.com/macrocosme/time_domain_astronomy_sandbox/issues" target="_blank">issue</a>
+
+Contribution
+------------
+
+If you want to contribute to the project, you can contact me or simply do a pull request on github.
+
+.. |pull request| raw:: html
+
+   <a href="https://github.com/macrocosme/time_domain_astronomy_sandbox" target="_blank">pull request</a>
 
 License
 -------
