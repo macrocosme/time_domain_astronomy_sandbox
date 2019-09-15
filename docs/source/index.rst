@@ -55,7 +55,7 @@ Getting started
 Instanciate a Backend using your preferred properties and use as argument to instanciate an Observation.
 You can then add Pulses via add_dispersed_pulse (Pulse()) and add_rfi.
 
-You can test it for yourself by starting the "Usage example.ipynb" jupyter notebook with the same name on |Binder| (it takes a few second to launch the server).
+You can test it for yourself by clicking on the file "Usage example.ipynb" on |Binder| to launch a jupyter notebook (it takes a few second to launch the server).
 
 .. |Binder| raw:: html
 
