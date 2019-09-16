@@ -68,7 +68,7 @@ def set_multi_axes(ax, direction, spectrum, xticks, xtick_labels, yticks, ytick_
         if len(yticks) > 0 and len(ytick_labels) > 0:
             if (direction == 'horizontal' and i == 0) or direction == 'vertical':
                 axi.set_ylabel('S/N' if (spectrum and (i % 2)) else 'Freq. (MHz)')
-                if spectrum is False or (spectrum is True and (i+1 % 2)):
+                if not (spectrum or (spectrum is True and (i % 2))):
                     axi.set_yticks(yticks)
                     axi.set_yticklabels(ytick_labels)
             else:
@@ -244,6 +244,7 @@ def plot_multi_images(data_arr,
         ncols=ncols,
         nrows=nrows,
         gridspec_kw = {'hspace':0, 'wspace':0},
+        sharex=True if spectrum else False
     )
 
     ax_i = 0
@@ -258,10 +259,10 @@ def plot_multi_images(data_arr,
         if colorbar:
             fig.colorbar(im, ax=ax[ax_i])
         if spectrum:
+            # ax[ax_i].autoscale(False)
             ax_i += 1
             ax[ax_i].plot(signaltonoise(data_arr[i], axis=0))
             ax[ax_i].set_ylabel('S/N')
-            # axi.autoscale(False)
             # ax2 = axi.twinx()
             # ax2.plot(signaltonoise(data_arr[i], axis=0), color='white', alpha=0.2)
             # ax2.set_ylabel('S/N')
