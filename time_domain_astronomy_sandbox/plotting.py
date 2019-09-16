@@ -31,9 +31,9 @@ def snr(data, noise_median, noise_std):
 # https://github.com/scipy/scipy/blob/v0.14.0/scipy/stats/stats.py#L1864
 def signaltonoise(a, axis=0, ddof=0):
     a = np.asanyarray(a)
-    m = a.mean(axis)
+    m = a.mean(axis=axis)
     sd = a.std(axis=axis, ddof=ddof)
-    return np.where(sd == 0, 0, m/sd)
+    return np.where(sd == 0, 0, (m/sd)*10)
 
 def set_multi_axes(ax, direction, xticks, xtick_labels, yticks, ytick_labels):
     """Set axes ticks and tick labels
@@ -255,8 +255,8 @@ def plot_multi_images(data_arr,
         if spectrum:
             axi.autoscale(False)
             ax2 = axi.twinx()
-            ax2.plot(np.mean(data_arr[i], axis=0)/, color='white', alpha=0.2)
-            ax2.set_ylabel(u'$\~{x}I$')
+            ax2.plot(signaltonoise(data_arr[i], axis=0), color='white', alpha=0.2)
+            ax2.set_ylabel('S/N')
         if colorbar:
             fig.colorbar(im, ax=axi)
 
