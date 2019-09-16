@@ -48,10 +48,10 @@ Requirements
     	numpy>=1.17.0
 	matplotlib>=2.1.2
 	ipywidgets>=7.4.1
-	
+
 Getting started
 ---------------
-          
+
 Instanciate a Backend using your preferred properties and use as argument to instanciate an Observation.
 You can then add Pulses via add_dispersed_pulse (Pulse()) and add_rfi.
 
@@ -65,7 +65,7 @@ You can test it for yourself by clicking on the file "Usage example.ipynb" on |B
 Usage examples
 --------------
 
-1. Load classes:  
+1. Load classes:
 
 .. code-block:: python
 
@@ -74,7 +74,7 @@ Usage examples
 	from time_domain_astronomy_sandbox.pulse import Pulse
 	from time_domain_astronomy_sandbox.plotting import plot_multi_images, plot_multi_1D
 	from time_domain_astronomy_sandbox.rfim import RFIm
-	
+
 
 2. Plot a dispersed pulse interactively (using `ipywidgets`)
 
@@ -86,13 +86,13 @@ Usage examples
 	    pulse.plot_delay_v_frequency_interactive(xscale='linear')
 
 	interactive_pulse_arts()
-	
-3. Plot low- and high-DM broadband dispersed pulses, narrowband periodic pulses, and run RFI cleaning. 
 
-.. code-block:: python 
+3. Plot low- and high-DM broadband dispersed pulses, narrowband periodic pulses, and run RFI cleaning.
+
+.. code-block:: python
 
 	from matplotlib import rc
-	
+
 	def pulse_and_rfi__cleaned():
 	    obs = Observation(Backend(), length=1.024/1.5)
 	    raw = obs.window.copy()
@@ -102,8 +102,8 @@ Usage examples
 	    obs.add_dispersed_pulse(dm=10, width=0.001, pulse_t0=0.33, snr=125)
 
 	    for t_start, t_step, t_width, f1, f2 in [
-	        [0., 0.01, 0.003, 350, 360], 
-	        [0.1, 0.008, 0.005, 700, 715], 
+	        [0., 0.01, 0.003, 350, 360],
+	        [0.1, 0.008, 0.005, 700, 715],
 	    ]:
 	        obs.add_rfi(
 	            t_start=t_start,
@@ -111,7 +111,7 @@ Usage examples
 	            t_step=t_step,
 	            t_width=t_width,
 
-	            f_start=f1, 
+	            f_start=f1,
 	            f_stop=f2,
 
 	            snr=125,
@@ -190,13 +190,17 @@ Usage examples
 	    )
 
 	pulse_and_rfi__cleaned()
-	
-Output:
-	
+
+Input data
+----------
+
 .. image:: _static/noise_pulses_rfi.jpg
 
+Applying RFI mitigation
+-----------------------
+
 .. image:: _static/rficlean.jpg
-	
+
 Comments and issues
 -------------------
 
