@@ -163,9 +163,13 @@ Usage examples
 
 	pulse_and_rfi__cleaned()
 	
-Output:
+Input data
+----------
 	
 .. image:: docs/source/_static/noise_pulses_rfi.jpg
+
+Applying RFI mitigation
+-----------------------
 
 .. image:: docs/source/_static/rficlean.jpg
 
