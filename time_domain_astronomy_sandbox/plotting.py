@@ -15,13 +15,13 @@ def add_at(ax, t, loc=2):
     ax.add_artist(_at)
     return _at
 
-def set_fig_dims(direction, data_arr):
+def set_fig_dims(direction, data_arr, spectrum):
     if direction == 'horizontal':
-        ncols = len(data_arr)
+        ncols = len(data_arr)*2 if spectrum else len(data_arr)
         nrows = 1
     elif direction == 'vertical':
         ncols = 1
-        nrows = len(data_arr)
+        nrows = len(data_arr)*2 if spectrum else len(data_arr)
 
     return ncols, nrows
 
@@ -35,7 +35,7 @@ def signaltonoise(a, axis=0, ddof=0):
     sd = a.std(axis=axis, ddof=ddof)
     return np.where(sd == 0, 0, (m/sd)*10)
 
-def set_multi_axes(ax, direction, xticks, xtick_labels, yticks, ytick_labels):
+def set_multi_axes(ax, direction, spectrum, xticks, xtick_labels, yticks, ytick_labels):
     """Set axes ticks and tick labels
 
     Parameters
@@ -67,9 +67,10 @@ def set_multi_axes(ax, direction, xticks, xtick_labels, yticks, ytick_labels):
 
         if len(yticks) > 0 and len(ytick_labels) > 0:
             if (direction == 'horizontal' and i == 0) or direction == 'vertical':
-                axi.set_ylabel('Freq. (MHz)')
-                axi.set_yticks(yticks)
-                axi.set_yticklabels(ytick_labels)
+                axi.set_ylabel('S/N' if (spectrum and (i % 2)) else 'Freq. (MHz)')
+                if spectrum is False or (spectrum is True and (i+1 % 2)):
+                    axi.set_yticks(yticks)
+                    axi.set_yticklabels(ytick_labels)
             else:
                 plt.setp(axi.get_yticklabels(), visible=False)
         else:
@@ -200,6 +201,7 @@ def plot_multi_images(data_arr,
                       noise_median=0, noise_std=1,
                       direction='horizontal',
                       xfig_size=10, yfig_size=5,
+                      loc=4,
                       spectrum=False,
                       colorbar=False,
                       savefig=False,
@@ -235,7 +237,7 @@ def plot_multi_images(data_arr,
         File extension (default 'png')
 
     """
-    ncols, nrows = set_fig_dims(direction, data_arr)
+    ncols, nrows = set_fig_dims(direction, data_arr, spectrum)
 
     fig, ax = plt.subplots(
         figsize=(xfig_size, yfig_size),
@@ -244,23 +246,28 @@ def plot_multi_images(data_arr,
         gridspec_kw = {'hspace':0, 'wspace':0},
     )
 
-    for i, axi in enumerate(ax):
-        im = axi.imshow(data_arr[i], origin='lower')
+    ax_i = 0
+    for i, data in enumerate(data_arr):
+        im = ax[ax_i].imshow(data_arr[i], origin='lower')
         if len(labels) > 0:
             pos_x = data_arr[i].shape[0]-0.3*data_arr[i].shape[0]
             pos_y = data_arr[i].shape[1]-0.3*data_arr[i].shape[1]
             # axi.annotate(pos_x, pos_y, labels[i], bbox={'facecolor': 'white', 'pad': 10})
             if len(labels[i]) > 0:
-                add_at(axi, labels[i], loc=4)
-        if spectrum:
-            axi.autoscale(False)
-            ax2 = axi.twinx()
-            ax2.plot(signaltonoise(data_arr[i], axis=0), color='white', alpha=0.2)
-            ax2.set_ylabel('S/N')
+                add_at(ax[ax_i], labels[i], loc=loc)
         if colorbar:
-            fig.colorbar(im, ax=axi)
+            fig.colorbar(im, ax=ax[ax_i])
+        if spectrum:
+            ax_i += 1
+            ax[ax_i].plot(signaltonoise(data_arr[i], axis=0))
+            ax[ax_i].set_ylabel('S/N')
+            # axi.autoscale(False)
+            # ax2 = axi.twinx()
+            # ax2.plot(signaltonoise(data_arr[i], axis=0), color='white', alpha=0.2)
+            # ax2.set_ylabel('S/N')
+        ax_i += 1
 
-    set_multi_axes(ax, direction, xticks, xtick_labels, yticks, ytick_labels)
+    set_multi_axes(ax, direction, spectrum, xticks, xtick_labels, yticks, ytick_labels)
 
     plt.tight_layout()
     if savefig:
