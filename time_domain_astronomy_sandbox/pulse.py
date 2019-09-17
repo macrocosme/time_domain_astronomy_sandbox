@@ -29,7 +29,7 @@ class Pulse():
         self.width = width
 
         # Frequency delay
-        self.dt = lambda dm, f_i : (4.148808 * 1000 * (f_i**-2 - self.backend.fmax**-2)) * dm
+        self.dt = lambda dm, f_i: (4.148808 * 1000 * (f_i**-2 - self.backend.fmax**-2)) * dm
 
     def delays(self, dm):
         """Create array of delays for each backend frequency channel.
@@ -45,7 +45,7 @@ class Pulse():
             Array of delays (in second)
 
         """
-        return np.array([self.dt(dm, f) for f in  self.backend.frequencies])
+        return np.array([self.dt(dm, f) for f in self.backend.frequencies])
 
     def plot_delay_v_frequency(self, dm, xscale='linear',
                                savefig=False, ext='png'):
@@ -76,7 +76,7 @@ class Pulse():
             fig.savefig('%d.%s' % (dm, ext) )
 
     def plot_signal_dispersed_dedispersed(self, dm, step=200, xscale='linear',
-                               savefig=False, ext='png', dpi=150):
+                                          savefig=False, ext='png', dpi=150):
         """Plot pulse's delay vs frequency.
 
         Parameters
@@ -97,14 +97,23 @@ class Pulse():
         ax.plot(self.delays(dm), self.backend.frequencies, label='Dispersed signal in the zero-DM plane')
         ax.plot(self.delays(0), self.backend.frequencies, label=r'De-dispersed signal (DM=%d pc/cm$^3$)' % dm)
 
+        min_dist = 99999999
+        for x1, x2 in zip(
+            self.delays(dm=dm)[::step],
+            self.delays(0)[::step]
+        ):
+            if min_dist > np.abs(x1-x2):
+                min_dist = np.abs(x1-x2)
+
         for y, x1, x2 in zip(
             self.backend.frequencies[::step],
             self.delays(dm=dm)[::step],
             self.delays(0)[::step]
         ):
+            head_length = (min_dist/2)-0.01 if ext == 'pdf' else min_dist/2
             ax.arrow(
-                x1, y, -x1+0.1 if x1 > 0.1 else 0.1 if x1 > 0 else 0, 0,
-                head_width=7, head_length=0.09 if ext=='pdf' else 0.1,
+                x1, y, -x1+head_length, 0,
+                head_width=7, head_length=head_length,
                 fc='k', ec='k'
                 )
 
