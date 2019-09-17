@@ -8,7 +8,6 @@ rc('axes', labelsize=18)
 
 from mpl_toolkits.axes_grid1 import AxesGrid
 from matplotlib.offsetbox import AnchoredText
-import scipy.signal
 
 def add_at(ax, t, loc=2):
     # fp = dict(size=13)
