@@ -28,28 +28,12 @@ def set_fig_dims(direction, data_arr, spectrum):
 def snr(data, noise_median, noise_std):
     return np.abs(np.median(data, axis=0)/noise_median)
 
-# https://github.com/scipy/scipy/blob/v0.14.0/scipy/stats/stats.py#L1864
-def signaltonoise(a, axis=0, ddof=0):
+def simple_snr(a, axis=0, ddof=0):
     a = np.asanyarray(a)
     m = a.mean(axis=axis)
     sd = a.std(axis=axis, ddof=ddof)
 
     return np.where(sd == 0, 0, (m/sd))
-
-def calc_snr_presto(data):
-        """ Calculate S/N of 1D input array (data)
-        after excluding 0.05 at tails
-        (Taken from liamconnor/injectfrb/tools.py)
-        """
-        std_chunk = scipy.signal.detrend(data, type='linear')
-        std_chunk.sort()
-        ntime_r = len(std_chunk)
-        stds = 1.148*np.sqrt((std_chunk[ntime_r//40:-ntime_r//40]**2.0).sum() /
-                              (0.95*ntime_r))
-        snr_ = std_chunk[-1] / stds
-
-        print (snr_)
-        return snr_
 
 def set_multi_axes(ax, direction, spectrum, xticks, xtick_labels, yticks, ytick_labels):
     """Set axes ticks and tick labels
@@ -268,7 +252,7 @@ def plot_multi_images(data_arr,
     for i, data in enumerate(data_arr):
         if spectrum:
             ax[ax_i].set_xlim(0, data_arr[i].shape[1]-1)
-            snr = signaltonoise(data_arr[i], axis=0)
+            snr = simple_snr(data_arr[i], axis=0)
             ax[ax_i].plot(snr)
             ax[ax_i].axis('off')
             if spec_max_snr < np.nanmax(snr):
@@ -279,7 +263,6 @@ def plot_multi_images(data_arr,
         if len(labels) > 0:
             pos_x = data_arr[i].shape[0]-0.3*data_arr[i].shape[0]
             pos_y = data_arr[i].shape[1]-0.3*data_arr[i].shape[1]
-            # axi.annotate(pos_x, pos_y, labels[i], bbox={'facecolor': 'white', 'pad': 10})
             if len(labels[i]) > 0:
                 add_at(ax[ax_i], labels[i], loc=loc)
         if colorbar:

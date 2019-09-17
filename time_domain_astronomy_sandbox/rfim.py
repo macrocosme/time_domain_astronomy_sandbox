@@ -12,6 +12,8 @@ class RFIm():
     def fdsc(self, data, bin_size=32, threshold=2.75):
         """Frequency domain sigma cut.
 
+        (Modified code from https://github.com/liamconnor/arts-analysis/blob/master/triggers.py)
+
         Parameters
         ----------
         data : Numpy.Array
@@ -60,20 +62,6 @@ class RFIm():
         return data
 
     def fdsc_amber(self, data, bin_size=32, threshold=2.75, n_iter=1):
-        """Frequency domain sigma cut as implemented in AA-ALERT RFIm.
-
-        Parameters
-        ----------
-        data : Numpy.Array
-            2D Array
-        bin_size : int
-            Size of averaging bin Size
-        threshold : float
-            Threshold to use for sigma cut inequality
-        n_iter : int
-            Number of cleaning iteration
-
-        """
         for k in range(n_iter):
             for t in range(data.shape[1]):
                 current = data[:, t]
@@ -90,6 +78,8 @@ class RFIm():
 
     def tdsc(self, data, threshold=3.25, n_iter=1):
         """Time domain sigma cut.
+
+        (Modified code from https://github.com/liamconnor/arts-analysis/blob/master/triggers.py)
 
         Parameters
         ----------
@@ -141,6 +131,8 @@ class RFIm():
 
     def tdsc_per_channel(self, data, threshold=3.25, n_iter=1):
         """Time domain sigma cut.
+
+        (Code from https://github.com/liamconnor/arts-analysis/blob/master/triggers.py)
 
         Parameters
         ----------
