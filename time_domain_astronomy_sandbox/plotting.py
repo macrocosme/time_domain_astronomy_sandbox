@@ -8,6 +8,7 @@ rc('axes', labelsize=18)
 
 from mpl_toolkits.axes_grid1 import AxesGrid
 from matplotlib.offsetbox import AnchoredText
+import scipy.signal
 
 def add_at(ax, t, loc=2):
     # fp = dict(size=13)
@@ -33,7 +34,23 @@ def signaltonoise(a, axis=0, ddof=0):
     a = np.asanyarray(a)
     m = a.mean(axis=axis)
     sd = a.std(axis=axis, ddof=ddof)
-    return np.where(sd == 0, 0, (m/sd)*10)
+
+    return np.where(sd == 0, 0, (m/sd))
+
+def calc_snr_presto(data):
+        """ Calculate S/N of 1D input array (data)
+        after excluding 0.05 at tails
+        (Taken from liamconnor/injectfrb/tools.py)
+        """
+        std_chunk = scipy.signal.detrend(data, type='linear')
+        std_chunk.sort()
+        ntime_r = len(std_chunk)
+        stds = 1.148*np.sqrt((std_chunk[ntime_r//40:-ntime_r//40]**2.0).sum() /
+                              (0.95*ntime_r))
+        snr_ = std_chunk[-1] / stds
+
+        print (snr_)
+        return snr_
 
 def set_multi_axes(ax, direction, spectrum, xticks, xtick_labels, yticks, ytick_labels):
     """Set axes ticks and tick labels
@@ -67,8 +84,8 @@ def set_multi_axes(ax, direction, spectrum, xticks, xtick_labels, yticks, ytick_
 
         if len(yticks) > 0 and len(ytick_labels) > 0:
             if (direction == 'horizontal' and i == 0) or direction == 'vertical':
-                axi.set_ylabel('S/N' if (spectrum and (i % 2)) else 'Freq. (MHz)')
-                if not (spectrum or (spectrum is True and (i % 2))):
+                axi.set_ylabel('S/N' if (spectrum and (i % 2)==0) else 'Freq. (MHz)')
+                if spectrum is False or (i % 2)==1:
                     axi.set_yticks(yticks)
                     axi.set_yticklabels(ytick_labels)
             else:
@@ -248,7 +265,17 @@ def plot_multi_images(data_arr,
     )
 
     ax_i = 0
+    spec_max_snr = -999
     for i, data in enumerate(data_arr):
+        if spectrum:
+            ax[ax_i].set_xlim(0, data_arr[i].shape[1]-1)
+            snr = signaltonoise(data_arr[i], axis=0)
+            ax[ax_i].plot(snr)
+            ax[ax_i].axis('off')
+            if spec_max_snr < np.nanmax(snr):
+                spec_max_snr = np.nanmax(snr)
+            ax_i += 1
+
         im = ax[ax_i].imshow(data_arr[i], origin='lower')
         if len(labels) > 0:
             pos_x = data_arr[i].shape[0]-0.3*data_arr[i].shape[0]
@@ -258,17 +285,15 @@ def plot_multi_images(data_arr,
                 add_at(ax[ax_i], labels[i], loc=loc)
         if colorbar:
             fig.colorbar(im, ax=ax[ax_i])
-        if spectrum:
-            # ax[ax_i].autoscale(False)
-            ax_i += 1
-            ax[ax_i].plot(signaltonoise(data_arr[i], axis=0))
-            ax[ax_i].set_ylabel('S/N')
-            # ax2 = axi.twinx()
-            # ax2.plot(signaltonoise(data_arr[i], axis=0), color='white', alpha=0.2)
-            # ax2.set_ylabel('S/N')
+
         ax_i += 1
 
     set_multi_axes(ax, direction, spectrum, xticks, xtick_labels, yticks, ytick_labels)
+
+    if spectrum:
+        for i, axi in enumerate(ax):
+            if (i % 2) == 0:
+                axi.set_ylim(0, spec_max_snr)
 
     plt.tight_layout()
     if savefig:
