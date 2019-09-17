@@ -105,17 +105,18 @@ class Pulse():
             if min_dist > np.abs(x1-x2):
                 min_dist = np.abs(x1-x2)
 
-        for y, x1, x2 in zip(
-            self.backend.frequencies[::step],
-            self.delays(dm=dm)[::step],
-            self.delays(0)[::step]
-        ):
-            head_length = (min_dist/2)-0.01 if ext == 'pdf' else min_dist/2
-            ax.arrow(
-                x1, y, -x1+head_length, 0,
-                head_width=7, head_length=head_length,
-                fc='k', ec='k'
-                )
+        if dm > 0:
+            for y, x1, x2 in zip(
+                self.backend.frequencies[::step],
+                self.delays(dm=dm)[::step],
+                self.delays(0)[::step]
+            ):
+                head_length = (min_dist/2)-0.01 if ext == 'pdf' else min_dist/2
+                ax.arrow(
+                    x1, y, -x1+head_length, 0,
+                    head_width=7, head_length=head_length,
+                    fc='k', ec='k'
+                    )
 
         ax.set_xlabel('Arrival time (s)')
         ax.set_ylabel('Frequency (MHz)')
