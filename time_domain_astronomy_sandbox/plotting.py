@@ -203,6 +203,7 @@ def plot_multi_1D(data_arr, labels=[],
                   direction='horizontal',
                   xfig_size=10, yfig_size=5,
                   loc=4,
+                  detection_threshold=None,
                   savefig=False,
                   fig_name='multi-1D',
                   ext='png',
@@ -248,6 +249,8 @@ def plot_multi_1D(data_arr, labels=[],
 
     for i, axi in enumerate(ax):
         axi.plot(simple_snr(data_arr[i], axis=0))
+        if detection_threshold is not None:
+            axi.plot(detection_threshold)
         if len(labels) > 0:
             pos_x = data_arr[i].shape[0]-0.3*data_arr[i].shape[0]
             pos_y = data_arr[i].shape[1]-0.3*data_arr[i].shape[1]
@@ -268,6 +271,7 @@ def plot_multi_images(data_arr,
                       xfig_size=10, yfig_size=5,
                       loc=4,
                       spectrum=False,
+                      detection_threshold=None,
                       colorbar=False,
                       savefig=False,
                       fig_name='multi-images',
@@ -308,17 +312,33 @@ def plot_multi_images(data_arr,
         figsize=(xfig_size, yfig_size),
         ncols=ncols,
         nrows=nrows,
-        gridspec_kw = {'hspace':0, 'wspace':0},
-        sharex=True if spectrum else False
+        # sharex=True if spectrum else False,
+        gridspec_kw=dict(
+            height_ratios=[(i % 2)+1 for i in range(len(data_arr) * 2)],
+            hspace=0.1,
+            wspace=0.
+        ) if spectrum else dict(
+                                hspace=0.1,
+                                wspace=0.
+                            )
     )
 
     ax_i = 0
     spec_max_snr = -999
     for i, data in enumerate(data_arr):
         if spectrum:
+            if detection_threshold is not None:
+                ax[ax_i].plot(
+                    [detection_threshold for i in range(data_arr[i].shape[1])],
+                    '--',
+                    color='black',
+                    alpha=0.5
+                )
+
             ax[ax_i].set_xlim(0, data_arr[i].shape[1]-1)
             snr = simple_snr(data_arr[i], axis=0)
             ax[ax_i].plot(snr)
+
             # ax[ax_i].axis('off')
             if spec_max_snr < np.nanmax(snr):
                 spec_max_snr = np.nanmax(snr)
@@ -340,7 +360,7 @@ def plot_multi_images(data_arr,
     if spectrum:
         for i, axi in enumerate(ax):
             if (i % 2) == 0:
-                axi.set_ylim(0, spec_max_snr)
+                axi.set_ylim(0, spec_max_snr+1)
 
     plt.tight_layout()
     if savefig:
