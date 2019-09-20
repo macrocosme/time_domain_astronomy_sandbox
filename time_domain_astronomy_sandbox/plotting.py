@@ -68,7 +68,7 @@ def simple_snr(a, axis=0, ddof=0):
     sd = m.std()#axis=axis, ddof=ddof)
 
     vals = np.where(sd == 0, 0, (m-m.mean())/sd)
-    print (vals)
+    # print (vals)
     return vals
 
 def set_multi_axes(ax, direction, xticks, xtick_labels, yticks, ytick_labels, spectrum=False, dual=False):
