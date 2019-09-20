@@ -69,7 +69,7 @@ class RFIm():
                 stdevt = np.std(dtmean_nobandpass)
                 # medt = np.median(dtmean_nobandpass)
                 medt = np.mean(dtmean_nobandpass)
-                maskt = dtmean_nobandpass > medt + threshold*stdevt
+                maskt = np.abs(dtmean_nobandpass-medt) > threshold*stdevt
 
                 # replace with mean bin values
                 data[maskt, t] = current.reshape(-1, bin_size).mean(-1).repeat(bin_size)[maskt]
@@ -123,7 +123,7 @@ class RFIm():
             for f in range(data.shape[0]):
                 dfmean = np.mean(data[f, :])
                 stdevf  = np.std(data[f, :])
-                maskf = np.where(data[f, :] > dfmean + threshold*stdevf)[0]
+                maskf = np.where(np.abs(data[f, :]-dfmean) > threshold*stdevf)[0]
 
                 data[f, maskf] = dfmean
 

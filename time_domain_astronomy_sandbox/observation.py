@@ -45,15 +45,16 @@ class Observation():
         # self.snr = lambda snr, area : (self.noise_median + snr * self.noise_std) / np.sqrt(area)
         self.snr = lambda snr, area : snr / np.sqrt(area)
 
-    # @property
-    # def window(self):
-    #     return np.abs(np.min(self._window))
-    #
-    # @window.setter
-    # def window(self, window):
-    #     self._window = window
+    @property
+    def window(self):
+        return self._window
 
-    def time_cleaning(self, window=[], n_iter=1, keep_state=False):
+    @window.setter
+    def window(self, window):
+        self._window = window
+
+
+    def time_cleaning(self, window=[], n_iter=1, threshold=3.25, keep_state=False):
         """RFI mitigation (cleaning) in time domain.
 
         Parameters
@@ -75,14 +76,14 @@ class Observation():
             window = self.window
 
         if keep_state:
-            window = RFIm().tdsc_amber(window, n_iter=n_iter)
+            window = RFIm().tdsc_amber(window, threshold=threshold, n_iter=n_iter)
         else:
-            return RFIm().tdsc_amber(window, n_iter=n_iter)
+            return RFIm().tdsc_amber(window, threshold=threshold, n_iter=n_iter)
 
         self.window = window
         return self.window
 
-    def frequency_cleaning(self, window=[], n_iter=1, threshold=2.75, keep_state=False):
+    def frequency_cleaning(self, window=[], n_iter=1, bin_size=32, threshold=2.75, keep_state=False):
         """RFI mitigation (cleaning) in frequency domain.
 
         Parameters
@@ -104,9 +105,9 @@ class Observation():
             window = self.window
 
         if keep_state:
-            window = RFIm().fdsc_amber(window, n_iter=n_iter, threshold=threshold)
+            window = RFIm().fdsc_amber(window, n_iter=n_iter, bin_size=bin_size, threshold=threshold)
         else:
-            return RFIm().fdsc_amber(window, n_iter=n_iter, threshold=threshold)
+            return RFIm().fdsc_amber(window, n_iter=n_iter, bin_size=bin_size, threshold=threshold)
 
         self.window = window
         return self.window

@@ -1,5 +1,6 @@
 """Plotting methods."""
 import numpy as np
+import scipy.signal
 from matplotlib import pyplot as plt
 from matplotlib import rc
 rc('font', size=16)
@@ -15,7 +16,7 @@ def add_at(ax, t, loc=2):
     ax.add_artist(_at)
     return _at
 
-def set_fig_dims(direction, data_arr, spectrum):
+def set_fig_dims(direction, data_arr, spectrum=False):
     if direction == 'horizontal':
         ncols = len(data_arr)*2 if spectrum else len(data_arr)
         nrows = 1
@@ -25,17 +26,52 @@ def set_fig_dims(direction, data_arr, spectrum):
 
     return ncols, nrows
 
-def snr(data, noise_median, noise_std):
-    return np.abs(np.median(data, axis=0)/noise_median)
+def calc_snr_presto(data):
+        """ Calculate S/N of 1D input array (data)
+        after excluding 0.05 at tails (source: liamconnor's arts-analysis)
+        """
+        std_chunk = scipy.signal.detrend(data, type='linear')
+        std_chunk.sort()
+        ntime_r = len(std_chunk)
+        stds = 1.148*np.sqrt((std_chunk[ntime_r//40:-ntime_r//40]**2.0).sum() /
+                              (0.95*ntime_r))
+        snr_ = std_chunk[-1] / stds
+
+        return snr_
+
+def calc_snr_amber(data, thresh=3.):
+        sig = np.std(data)
+        dmax = (data.copy()).max()
+        dmed = np.median(data)
+        N = len(data)
+
+        # remove outliers 4 times until there
+        # are no events above threshold*sigma
+        for ii in range(4):
+            ind = np.where(np.abs(data-dmed)<thresh*sig)[0]
+            sig = np.std(data[ind])
+            dmed = np.median(data[ind])
+            data = data[ind]
+            N = len(data)
+
+        snr_ = (dmax - dmed)/(1.048*sig)
+
+        return snr_
+
+def compute_snr(data, axis=0):
+    return np.apply_along_axis(calc_snr_amber, axis, data)
 
 def simple_snr(a, axis=0, ddof=0):
     a = np.asanyarray(a)
     m = a.mean(axis=axis)
-    sd = a.std(axis=axis, ddof=ddof)
+    m_max = m.max()
+    sd = m.std()#axis=axis, ddof=ddof)
 
-    return np.where(sd == 0, 0, (m/sd))
+    vals = np.where(sd == 0, 0, (m-m.mean())/sd)
+    print (vals)
+    return vals
 
-def set_multi_axes(ax, direction, spectrum, xticks, xtick_labels, yticks, ytick_labels):
+def set_multi_axes(ax, direction, xticks, xtick_labels, yticks, ytick_labels, spectrum=False, dual=False):
     """Set axes ticks and tick labels
 
     Parameters
@@ -54,27 +90,51 @@ def set_multi_axes(ax, direction, spectrum, xticks, xtick_labels, yticks, ytick_
         List of tick labels for y axis
 
     """
-    for i, axi in enumerate(ax):
-        if len(xticks) > 0 and len(xtick_labels) > 0:
-            if (direction == 'vertical' and i == len(ax)-1) or direction == 'horizontal':
-                axi.set_xlabel('Time (s)')
-                axi.set_xticks(xticks)
-                axi.set_xticklabels(xtick_labels)
+    if dual:
+        for i, axi in enumerate(ax):
+            if len(xticks) > 0 and len(xtick_labels) > 0:
+                if (direction == 'vertical' and i == len(ax)-1) or direction == 'horizontal':
+                    axi.set_xlabel('Time (s)')
+                    axi.set_xticks(xticks)
+                    axi.set_xticklabels(xtick_labels)
+                else:
+                    plt.setp(axi.get_xticklabels(), visible=False)
             else:
-                plt.setp(axi.get_xticklabels(), visible=False)
-        else:
-            axi.set_xlabel('X Index')
+                axi.set_xlabel('X Index')
 
-        if len(yticks) > 0 and len(ytick_labels) > 0:
-            if (direction == 'horizontal' and i == 0) or direction == 'vertical':
-                axi.set_ylabel('S/N' if (spectrum and (i % 2)==0) else 'Freq. (MHz)')
-                if spectrum is False or (i % 2)==1:
-                    axi.set_yticks(yticks)
-                    axi.set_yticklabels(ytick_labels)
+            if len(yticks) > 0 and len(ytick_labels) > 0:
+                if (direction == 'horizontal' and i == 0) or direction == 'vertical':
+                    axi.set_ylabel('S/N' if (spectrum and (i % 2)==0) else 'Freq. (MHz)')
+                    if spectrum is False or (i % 2)==1:
+                        axi.set_yticks(yticks)
+                        axi.set_yticklabels(ytick_labels)
+                else:
+                    plt.setp(axi.get_yticklabels(), visible=False)
             else:
-                plt.setp(axi.get_yticklabels(), visible=False)
-        else:
-            axi.set_ylabel('S/N')
+                axi.set_ylabel('S/N')
+    else:
+        for i, axi in enumerate(ax):
+            if len(xticks) > 0 and len(xtick_labels) > 0:
+                if (direction == 'vertical' and i == len(ax)-1) or direction == 'horizontal':
+                    axi.set_xlabel('Time (s)')
+                    axi.set_xticks(xticks)
+                    axi.set_xticklabels(xtick_labels)
+                else:
+                    plt.setp(axi.get_xticklabels(), visible=False)
+            else:
+                axi.set_xlabel('X Index')
+
+            if len(yticks) > 0 and len(ytick_labels) > 0:
+                if (direction == 'horizontal' and i == 0) or direction == 'vertical':
+                    axi.set_ylabel('S/N' if (spectrum) else 'Freq. (MHz)')
+                    if spectrum is False:
+                        axi.set_yticks(yticks)
+                        axi.set_yticklabels(ytick_labels)
+                else:
+                    plt.setp(axi.get_yticklabels(), visible=False)
+            else:
+                axi.set_ylabel('S/N')
+
 
 def plot_spectrum(data, ncols=1, nrows=1):
     """Plot spectrum.
@@ -138,12 +198,12 @@ def plot_image(data,
         ax.set_yticks(yticks)
         ax.set_yticklabels(ytick_labels)
 
-def plot_multi_1D(data_arr,
+def plot_multi_1D(data_arr, labels=[],
                   xticks=[], xtick_labels=[],
                   yticks=[], ytick_labels=[],
-                  noise_median=0, noise_std=1,
                   direction='horizontal',
                   xfig_size=10, yfig_size=5,
+                  loc=4,
                   savefig=False,
                   fig_name='multi-1D',
                   ext='png',
@@ -182,13 +242,20 @@ def plot_multi_1D(data_arr,
     fig, ax = plt.subplots(
         figsize=(xfig_size, yfig_size),
         ncols=ncols,
-        nrows=nrows
+        nrows=nrows,
+        gridspec_kw = {'hspace':0, 'wspace':0},
+        sharex=True
     )
 
     for i, axi in enumerate(ax):
-        axi.plot(snr(data_arr[i], noise_median, noise_std))
+        axi.plot(simple_snr(data_arr[i], axis=0))
+        if len(labels) > 0:
+            pos_x = data_arr[i].shape[0]-0.3*data_arr[i].shape[0]
+            pos_y = data_arr[i].shape[1]-0.3*data_arr[i].shape[1]
+            if len(labels[i]) > 0:
+                add_at(axi, labels[i], loc=loc)
 
-    set_multi_axes(ax, direction, xticks, xtick_labels, yticks, ytick_labels)
+    set_multi_axes(ax, direction=direction, xticks=xticks, xtick_labels=xtick_labels, yticks=yticks, ytick_labels=ytick_labels, spectrum=True)
 
     plt.tight_layout()
     if savefig:
@@ -198,7 +265,6 @@ def plot_multi_images(data_arr,
                       labels=[],
                       xticks=[], xtick_labels=[],
                       yticks=[], ytick_labels=[],
-                      noise_median=0, noise_std=1,
                       direction='horizontal',
                       xfig_size=10, yfig_size=5,
                       loc=4,
@@ -254,7 +320,7 @@ def plot_multi_images(data_arr,
             ax[ax_i].set_xlim(0, data_arr[i].shape[1]-1)
             snr = simple_snr(data_arr[i], axis=0)
             ax[ax_i].plot(snr)
-            ax[ax_i].axis('off')
+            # ax[ax_i].axis('off')
             if spec_max_snr < np.nanmax(snr):
                 spec_max_snr = np.nanmax(snr)
             ax_i += 1
@@ -270,7 +336,7 @@ def plot_multi_images(data_arr,
 
         ax_i += 1
 
-    set_multi_axes(ax, direction, spectrum, xticks, xtick_labels, yticks, ytick_labels)
+    set_multi_axes(ax, direction, xticks, xtick_labels, yticks, ytick_labels, spectrum, dual=True)
 
     if spectrum:
         for i, axi in enumerate(ax):
