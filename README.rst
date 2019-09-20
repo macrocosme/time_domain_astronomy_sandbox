@@ -22,7 +22,6 @@ Classes includes:
     - ``RFIm``: radio frequency interference mitigation functions,
     - ``Plotting``: plotting functions.
 
-Copyright (c) Dany Vohl. 2019.
 
 Getting started
 ---------------
@@ -175,3 +174,6 @@ Applying RFI mitigation
 
 
 This project is licensed under the terms of the GNU GPL v3+ license. Conditions can be found online.
+
+
+Copyright (c) Dany Vohl. 2019.
