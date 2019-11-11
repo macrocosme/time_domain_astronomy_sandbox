@@ -62,8 +62,6 @@ Usage examples
 
 .. code-block:: python 
 
-	from matplotlib import rc
-
 	def pulse_and_rfi__cleaned():
 	    obs = Observation(Backend(), length=1.024/1.5)
 	    raw = obs.window.copy()
@@ -73,20 +71,21 @@ Usage examples
 	    obs.add_dispersed_pulse(dm=10, width=0.001, pulse_t0=0.33, snr=125)
 
 	    for t_start, t_step, t_width, f1, f2 in [
-	        [0., 0.01, 0.003, 350, 360], 
-	        [0.1, 0.008, 0.005, 700, 715], 
+		[0., 0.01, 0.003, 350, 360], 
+		[0.1, 0.008, 0.005, 700, 715], 
+	    #     [0.2, 0.007, 0.004, 1220, 1255]
 	    ]:
-	        obs.add_rfi(
-	            t_start=t_start,
-	            t_stop=t_start+0.3,
-	            t_step=t_step,
-	            t_width=t_width,
+		obs.add_rfi(
+		    t_start=t_start,
+		    t_stop=t_start+0.3,
+		    t_step=t_step,
+		    t_width=t_width,
 
-	            f_start=f1, 
-	            f_stop=f2,
+		    f_start=f1, 
+		    f_stop=f2,
 
-	            snr=125,
-	        )
+		    snr=125,
+		)
 
 	    xstep = 1100
 	    ystep = 500
@@ -94,84 +93,107 @@ Usage examples
 	    rc('font', size=16)
 	    rc('axes', labelsize=18)
 
-	    o_window = obs.window.copy()
+	    original = copy.deepcopy(obs)
 
 	    plot_multi_images(
-	        (
-	            raw,
-	            frb,
-	            o_window,
-	        ),
+		(
+		    raw,
+		    frb,
+		    original.window,
+		),
 
-	        labels=(
-	            'Noise (gaussian)',
-	            'Noise + Faint FRB',
-	            'Noise + Faint FRB + Strong RFI',
-	        ),
+		labels=(
+		    'Noise (gaussian)',
+		    'Noise + Faint FRB',
+		    'Noise + Faint FRB + Strong RFI',
+		),
 
-	        direction='vertical',
+		direction='vertical',
 
-	        xticks=obs.time_indices[::xstep],
-	        xtick_labels=["%.2f" % t for t in obs.times[::xstep]],
+		xticks=obs.time_indices[::xstep],
+		xtick_labels=["%.2f" % t for t in obs.times[::xstep]],
 
-	        yticks=obs.backend.freq_indices[::ystep],
-	        ytick_labels=["%.0f" % f for f in obs.backend.frequencies[::ystep]],
+		yticks=obs.backend.freq_indices[::ystep],
+		ytick_labels=["%.0f" % f for f in obs.backend.frequencies[::ystep]],
 
-	        xfig_size=12,
-	        yfig_size=7.3,
-	        spectrum=False,
-	        colorbar=False,
-	        savefig=False,
-	        fig_name='noise_pulses_rfi',
-	        ext='pdf'
+		xfig_size=12,
+		yfig_size=7.4,
+		spectrum=False,
+		colorbar=True,
+		savefig=True,
+		fig_name='noise_pulses_rfi',
+		ext='pdf'
 	    )
 
+	    del raw
+
 	    o_tc = RFIm().tdsc_amber(obs.window.copy())
-	    o_fc = RFIm().fdsc_amber(obs.window.copy())
+	    o_fc = RFIm().fdsc_amber(obs.window.copy(), bin_size=Backend().n_channels, threshold=3.25)
 	    plot_multi_images(
-	        (
-	            o_tc,
-	            o_fc,
-	            obs.frequency_cleaning(obs.time_cleaning(), keep_state=True),
-	            obs.dedisperse(dm=500),
-	        ),
+		(
+		    o_tc,
+		    o_fc,
+		    obs.frequency_cleaning(obs.time_cleaning(), keep_state=True, bin_size=Backend().n_channels, threshold=3.25),
+		),
 
-	        labels=(
-	            'RFI mitigation (time)',
-	            'RFI mitigation (freq.)',
-	            'RFI mitigation (time and freq.)',
-	            'Dedispersed RFI mitigation (time and freq., DM=500)',
-	        ),
+		labels=(
+		    'RFI mitigation (time)',
+		    'RFI mitigation (freq.)',
+		    'RFI mitigation (time and freq.)',
+		),
 
-	        direction='vertical',
+		direction='vertical',
 
-	        xticks=obs.time_indices[::xstep],
-	        xtick_labels=["%.2f" % t for t in obs.times[::xstep]],
+		xticks=obs.time_indices[::xstep],
+		xtick_labels=["%.2f" % t for t in obs.times[::xstep]],
 
-	        yticks=obs.backend.freq_indices[::ystep],
-	        ytick_labels=["%.0f" % f for f in obs.backend.frequencies[::ystep]],
+		yticks=obs.backend.freq_indices[::ystep],
+		ytick_labels=["%.0f" % f for f in obs.backend.frequencies[::ystep]],
 
-	        xfig_size=12,
-	        yfig_size=9.4,
-	        spectrum=False,
-	        colorbar=False,
-	        savefig=False,
-	        fig_name='rficlean',
-	        ext='pdf'
+		xfig_size=12,
+		yfig_size=7.4,
+		spectrum=False,
+		colorbar=True,
+		savefig=True,
+		fig_name='rficlean',
+		ext='pdf'
+	    )
+
+	    plot_multi_images(
+		(
+		    original.dedisperse(dm=500),
+		    obs.dedisperse(dm=500),
+		),
+
+		labels=(
+		    'Dedispersed input (DM=500 pc/cm^3)',
+		    'Dedispersed w/ RFI mitigation (time and freq., DM=500 pc/cm^3)',
+		),
+
+		direction='vertical',
+
+		xticks=obs.time_indices[::xstep],
+		xtick_labels=["%.2f" % t for t in obs.times[::xstep]],
+
+		yticks=obs.backend.freq_indices[::ystep],
+		ytick_labels=["%.0f" % f for f in obs.backend.frequencies[::ystep]],
+
+		xfig_size=12,
+		yfig_size=9.4,
+
+		loc=1,
+
+		detection_threshold=8.,
+
+		spectrum=True,
+		colorbar=False,
+		savefig=True,
+		fig_name='input_dedispersed',
+		ext='pdf'
 	    )
 
 	pulse_and_rfi__cleaned()
 	
-Input data
-----------
-	
-.. image:: docs/source/_static/noise_pulses_rfi.jpg
-
-Applying RFI mitigation
------------------------
-
-.. image:: docs/source/_static/rficlean.jpg
-
 
 This project is licensed under the terms of the GNU GPL v3+ license. Conditions can be found online.
 
