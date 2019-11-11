@@ -54,7 +54,7 @@ class Observation():
         self._window = window
 
 
-    def time_cleaning(self, window=[], n_iter=1, threshold=3.25, keep_state=False):
+    def time_cleaning(self, window=[], n_iter=1, threshold=3.25, symetric=False, keep_state=False):
         """RFI mitigation (cleaning) in time domain.
 
         Parameters
@@ -76,14 +76,14 @@ class Observation():
             window = self.window
 
         if keep_state:
-            window = RFIm().tdsc_amber(window, threshold=threshold, n_iter=n_iter)
+            window = RFIm().tdsc_amber(window, threshold=threshold, n_iter=n_iter, symetric=symetric)
         else:
-            return RFIm().tdsc_amber(window, threshold=threshold, n_iter=n_iter)
+            return RFIm().tdsc_amber(window, threshold=threshold, n_iter=n_iter, symetric=symetric)
 
         self.window = window
         return self.window
 
-    def frequency_cleaning(self, window=[], n_iter=1, bin_size=32, threshold=2.75, keep_state=False):
+    def frequency_cleaning(self, window=[], n_iter=1, bin_size=32, threshold=2.75, symetric=False, keep_state=False):
         """RFI mitigation (cleaning) in frequency domain.
 
         Parameters
@@ -105,9 +105,21 @@ class Observation():
             window = self.window
 
         if keep_state:
-            window = RFIm().fdsc_amber(window, n_iter=n_iter, bin_size=bin_size, threshold=threshold)
+            window = RFIm().fdsc_amber(window, n_iter=n_iter, bin_size=bin_size, threshold=threshold, symetric=symetric)
         else:
-            return RFIm().fdsc_amber(window, n_iter=n_iter, bin_size=bin_size, threshold=threshold)
+            return RFIm().fdsc_amber(window, n_iter=n_iter, bin_size=bin_size, threshold=threshold, symetric=symetric)
+
+        self.window = window
+        return self.window
+
+    def dm0_cleaning(self, window=[], threshold=3.25, keep_state=False):
+        if len(window) == 0:
+            window = self.window
+
+        if keep_state:
+            window = RFIm().dm0clean(window, threshold=threshold)
+        else:
+            return RFIm().dm0clean(window, threshold=threshold)
 
         self.window = window
         return self.window

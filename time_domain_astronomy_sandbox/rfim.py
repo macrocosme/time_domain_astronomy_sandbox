@@ -9,6 +9,16 @@ class RFIm():
         """Initialise RFIm class."""
         pass
 
+    def dm0clean(self, data, threshold=3.25):
+        dtmean = np.mean(data, axis=1)
+        dfmean = np.mean(data, axis=0)
+        stdevf = np.std(dfmean)
+        medf = np.median(dfmean)
+        maskf = np.where(np.abs(dfmean - medf) > threshold*stdevf)[0]
+        # replace with mean spectrum
+        data[:, maskf] = dtmean[:, None]*np.ones(len(maskf))[None]
+        return data
+
     def fdsc(self, data, bin_size=32, threshold=2.75):
         """Frequency domain sigma cut.
 
@@ -61,7 +71,21 @@ class RFIm():
 
         return data
 
-    def fdsc_amber(self, data, bin_size=32, threshold=2.75, n_iter=1):
+    def fdsc_amber(self, data, bin_size=32, threshold=2.75, n_iter=1, symetric=False):
+        """Frequency domain sigma cut.
+
+        Parameters
+        ----------
+        data : Numpy.Array
+            2D Array
+        bin_size : int
+            Size of averaging bin Size
+        threshold : float
+            Threshold to use for sigma cut inequality
+        n_iter : int
+            Number of cleaning iteration
+
+        """
         for k in range(n_iter):
             for t in range(data.shape[1]):
                 current = data[:, t]
@@ -69,7 +93,11 @@ class RFIm():
                 stdevt = np.std(dtmean_nobandpass)
                 # medt = np.median(dtmean_nobandpass)
                 medt = np.mean(dtmean_nobandpass)
-                maskt = np.abs(dtmean_nobandpass-medt) > threshold*stdevt
+
+                if symetric:
+                    maskt = np.abs(dtmean_nobandpass-medt) > threshold*stdevt
+                else:
+                    maskt = dtmean_nobandpass > medt + threshold*stdevt
 
                 # replace with mean bin values
                 data[maskt, t] = current.reshape(-1, bin_size).mean(-1).repeat(bin_size)[maskt]
@@ -104,7 +132,7 @@ class RFIm():
 
         return data
 
-    def tdsc_amber(self, data, threshold=3.25, n_iter=1):
+    def tdsc_amber(self, data, threshold=3.25, n_iter=1, symetric=False):
         """Time domain sigma cut as implemented in AA-ALERT RFIm.
 
         Parameters
@@ -123,7 +151,11 @@ class RFIm():
             for f in range(data.shape[0]):
                 dfmean = np.mean(data[f, :])
                 stdevf  = np.std(data[f, :])
-                maskf = np.where(np.abs(data[f, :]-dfmean) > threshold*stdevf)[0]
+
+                if symetric:
+                    maskf = np.where(np.abs(data[f, :] - dfmean) > threshold*stdevf)[0]
+                else:
+                    maskf = np.where(data[f, :] > dfmean + threshold*stdevf)[0]
 
                 data[f, maskf] = dfmean
 

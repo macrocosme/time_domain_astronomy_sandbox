@@ -10,6 +10,8 @@ rc('axes', labelsize=18)
 from mpl_toolkits.axes_grid1 import AxesGrid
 from matplotlib.offsetbox import AnchoredText
 
+from .snr import SNR
+
 def add_at(ax, t, loc=2):
     # fp = dict(size=13)
     _at = AnchoredText(t, loc=loc)#, prop=fp)
@@ -25,50 +27,6 @@ def set_fig_dims(direction, data_arr, spectrum=False):
         nrows = len(data_arr)*2 if spectrum else len(data_arr)
 
     return ncols, nrows
-
-def calc_snr_presto(data):
-        """ Calculate S/N of 1D input array (data)
-        after excluding 0.05 at tails (source: liamconnor's arts-analysis)
-        """
-        std_chunk = scipy.signal.detrend(data, type='linear')
-        std_chunk.sort()
-        ntime_r = len(std_chunk)
-        stds = 1.148*np.sqrt((std_chunk[ntime_r//40:-ntime_r//40]**2.0).sum() /
-                              (0.95*ntime_r))
-        snr_ = std_chunk[-1] / stds
-
-        return snr_
-
-def calc_snr_amber(data, thresh=3.):
-        sig = np.std(data)
-        dmax = (data.copy()).max()
-        dmed = np.median(data)
-        N = len(data)
-
-        # remove outliers 4 times until there
-        # are no events above threshold*sigma
-        for ii in range(4):
-            ind = np.where(np.abs(data-dmed)<thresh*sig)[0]
-            sig = np.std(data[ind])
-            dmed = np.median(data[ind])
-            data = data[ind]
-            N = len(data)
-
-        snr_ = (dmax - dmed)/(1.048*sig)
-
-        return snr_
-
-def compute_snr(data, axis=0):
-    return np.apply_along_axis(calc_snr_amber, axis, data)
-
-def simple_snr(a, axis=0, ddof=0):
-    a = np.asanyarray(a)
-    m = a.mean(axis=axis)
-    m_max = m.max()
-    sd = m.std()
-
-    vals = np.where(sd == 0, 0, (m-m.mean())/sd)
-    return vals
 
 def set_multi_axes(ax, direction, xticks, xtick_labels, yticks, ytick_labels, spectrum=False, dual=False):
     """Set axes ticks and tick labels
@@ -103,14 +61,14 @@ def set_multi_axes(ax, direction, xticks, xtick_labels, yticks, ytick_labels, sp
 
             if len(yticks) > 0 and len(ytick_labels) > 0:
                 if (direction == 'horizontal' and i == 0) or direction == 'vertical':
-                    axi.set_ylabel('S/N' if (spectrum and (i % 2)==0) else 'Freq. (MHz)')
-                    if spectrum is False or (i % 2)==1:
+                    axi.set_ylabel('SNR' if (spectrum and (i % 2)==1) else 'Freq. (MHz)')
+                    if spectrum is False or (i % 2)==0:
                         axi.set_yticks(yticks)
                         axi.set_yticklabels(ytick_labels)
                 else:
                     plt.setp(axi.get_yticklabels(), visible=False)
             else:
-                axi.set_ylabel('S/N')
+                axi.set_ylabel('SNR')
     else:
         for i, axi in enumerate(ax):
             if len(xticks) > 0 and len(xtick_labels) > 0:
@@ -248,9 +206,12 @@ def plot_multi_1D(data_arr, labels=[],
     )
 
     for i, axi in enumerate(ax):
-        axi.plot(simple_snr(data_arr[i], axis=0))
+        axi.plot(SNR().simple_snr(data_arr[i], axis=0))
         if detection_threshold is not None:
-            axi.plot(detection_threshold)
+            axi.plot(
+                [i for i in range(data_arr[i].shape[1])],
+                [detection_threshold for i in range(data_arr[i].shape[1])]
+            )
         if len(labels) > 0:
             pos_x = data_arr[i].shape[0]-0.3*data_arr[i].shape[0]
             pos_y = data_arr[i].shape[1]-0.3*data_arr[i].shape[1]
@@ -314,7 +275,7 @@ def plot_multi_images(data_arr,
         nrows=nrows,
         # sharex=True if spectrum else False,
         gridspec_kw=dict(
-            height_ratios=[(i % 2)+1 for i in range(len(data_arr) * 2)],
+            height_ratios=[2 if (i % 2) == 0 else 1 for i in range(len(data_arr) * 2)],
             hspace=0.1,
             wspace=0.
         ) if spectrum else dict(
@@ -326,7 +287,17 @@ def plot_multi_images(data_arr,
     ax_i = 0
     spec_max_snr = -999
     for i, data in enumerate(data_arr):
+        im = ax[ax_i].imshow(data_arr[i], origin='lower')
+        if len(labels) > 0:
+            pos_x = data_arr[i].shape[0]-0.3*data_arr[i].shape[0]
+            pos_y = data_arr[i].shape[1]-0.3*data_arr[i].shape[1]
+            if len(labels[i]) > 0:
+                add_at(ax[ax_i], labels[i], loc=loc)
+        if colorbar:
+            cbar = plt.colorbar(im, ax=ax[ax_i])
+            # cbar.set_label('Arbitrary unit', size=15)
         if spectrum:
+            ax_i += 1
             if detection_threshold is not None:
                 ax[ax_i].plot(
                     [detection_threshold for i in range(data_arr[i].shape[1])],
@@ -336,22 +307,12 @@ def plot_multi_images(data_arr,
                 )
 
             ax[ax_i].set_xlim(0, data_arr[i].shape[1]-1)
-            snr = simple_snr(data_arr[i], axis=0)
+            snr = SNR().simple_snr(data_arr[i], axis=0)
             ax[ax_i].plot(snr)
 
             # ax[ax_i].axis('off')
             if spec_max_snr < np.nanmax(snr):
                 spec_max_snr = np.nanmax(snr)
-            ax_i += 1
-
-        im = ax[ax_i].imshow(data_arr[i], origin='lower')
-        if len(labels) > 0:
-            pos_x = data_arr[i].shape[0]-0.3*data_arr[i].shape[0]
-            pos_y = data_arr[i].shape[1]-0.3*data_arr[i].shape[1]
-            if len(labels[i]) > 0:
-                add_at(ax[ax_i], labels[i], loc=loc)
-        if colorbar:
-            fig.colorbar(im, ax=ax[ax_i])
 
         ax_i += 1
 
@@ -359,7 +320,7 @@ def plot_multi_images(data_arr,
 
     if spectrum:
         for i, axi in enumerate(ax):
-            if (i % 2) == 0:
+            if (i % 2) == 1:
                 axi.set_ylim(0, spec_max_snr+1)
 
     plt.tight_layout()
