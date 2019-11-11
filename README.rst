@@ -15,11 +15,12 @@ A series of classes to simulate time-domain astronomy data products.
 .. image:: docs/source/_static/multi-images.jpg
 
 
-Classes includes:
+Classes include:
     - ``Backend``: properties describing an observatory backend,
     - ``Pulse``: a broadband dispersed pulse,
     - ``Observation``: an observation data product generated for a given ``Backend``,
     - ``RFIm``: radio frequency interference mitigation functions,
+    - ``SNR``: signal-to-noise functions,
     - ``Plotting``: plotting functions.
 
 
