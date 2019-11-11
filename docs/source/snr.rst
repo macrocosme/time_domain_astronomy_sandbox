@@ -6,5 +6,5 @@
 SNR
 ===
 
-.. autoclass:: time_domain_astronomy_sandbox.rfim.SNR
+.. autoclass:: time_domain_astronomy_sandbox.snr.SNR
    :members:
