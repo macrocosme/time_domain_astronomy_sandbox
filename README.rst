@@ -33,7 +33,7 @@ See basic usage examples by running the "Usage example.ipynb" jupyter notebook l
 
 
 
-This project is licensed under the terms of the GNU GPL v3+ license. Conditions can be found online.
+This project is licensed under the terms of the GNU GPL v3+ license. More information can be found in LICENSE.
 
 
 Copyright (c) Dany Vohl. 2019.
