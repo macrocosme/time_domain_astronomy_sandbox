@@ -71,7 +71,7 @@ class RFIm():
 
         return data
 
-    def fdsc_amber(self, data, bin_size=32, threshold=2.75, n_iter=1, symetric=False):
+    def fdsc_amber(self, data, bin_size=32, threshold=2.75, n_iter=1, symmetric=False):
         """Frequency domain sigma cut.
 
         Parameters
@@ -84,6 +84,8 @@ class RFIm():
             Threshold to use for sigma cut inequality
         n_iter : int
             Number of cleaning iteration
+        symmetric : bool
+            Filter equally or not on both side of the distribution
 
         """
         for k in range(n_iter):
@@ -94,7 +96,7 @@ class RFIm():
                 # medt = np.median(dtmean_nobandpass)
                 medt = np.mean(dtmean_nobandpass)
 
-                if symetric:
+                if symmetric:
                     maskt = np.abs(dtmean_nobandpass-medt) > threshold*stdevt
                 else:
                     maskt = dtmean_nobandpass > medt + threshold*stdevt
@@ -113,8 +115,6 @@ class RFIm():
         ----------
         data : Numpy.Array
             2D Array
-        bin_size : int
-            Size of averaging bin Size
         threshold : float
             Threshold to use for sigma cut inequality
         n_iter : int
@@ -132,19 +132,19 @@ class RFIm():
 
         return data
 
-    def tdsc_amber(self, data, threshold=3.25, n_iter=1, symetric=False):
+    def tdsc_amber(self, data, threshold=3.25, n_iter=1, symmetric=False):
         """Time domain sigma cut as implemented in AA-ALERT RFIm.
 
         Parameters
         ----------
         data : Numpy.Array
             2D Array
-        bin_size : int
-            Size of averaging bin Size
         threshold : float
             Threshold to use for sigma cut inequality
         n_iter : int
             Number of cleaning iteration
+        symmetric : bool
+            Filter equally or not on both side of the distribution
 
         """
         for k in range(n_iter):
@@ -152,7 +152,7 @@ class RFIm():
                 dfmean = np.mean(data[f, :])
                 stdevf  = np.std(data[f, :])
 
-                if symetric:
+                if symmetric:
                     maskf = np.where(np.abs(data[f, :] - dfmean) > threshold*stdevf)[0]
                 else:
                     maskf = np.where(data[f, :] > dfmean + threshold*stdevf)[0]
@@ -170,8 +170,6 @@ class RFIm():
         ----------
         data : Numpy.Array
             2D Array
-        bin_size : int
-            Size of averaging bin Size
         threshold : float
             Threshold to use for sigma cut inequality
         n_iter : int
